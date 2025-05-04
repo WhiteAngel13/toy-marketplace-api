@@ -3,9 +3,9 @@
   - [x] SignUp
 - [x] User
   - [x] Me
-- [ ] Store
-- [ ] Product
-- [ ] Category
+- [x] Store
+- [x] Product
+- [x] Category
 - [ ] Ads
 - [ ] Cart
 - [ ] Shipping

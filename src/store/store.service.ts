@@ -40,6 +40,15 @@ export type CreateStoreServiceResponseDTO = {
   store: Store;
 };
 
+export type IsUserStoreOwnerServiceParamsDTO = {
+  store: Store;
+  user: User;
+};
+
+export type IsUserStoreOwnerServiceResponseDTO = {
+  isOwner: boolean;
+};
+
 @Injectable()
 export class StoreService {
   constructor(private readonly drizzleService: DrizzleService) {}

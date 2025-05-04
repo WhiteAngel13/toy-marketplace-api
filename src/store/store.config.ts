@@ -6,7 +6,7 @@ import {
   NestMiddleware,
   SetMetadata,
   applyDecorators,
-  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { NextFunction, Request } from 'express';
 import { Store } from './store.entity';
@@ -31,7 +31,7 @@ export const ReqStore = createParamDecorator(
 @Injectable()
 export class StoreMiddleware implements NestMiddleware {
   constructor(private readonly storeService: StoreService) {}
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, _: Response, next: NextFunction) {
     const id = req.params.id;
     if (!id) return next();
 
@@ -64,6 +64,6 @@ export class StoreGuard implements CanActivate {
     if (!shouldBeStoreOwner) return true;
     if (store.owner_user_id === user.id) return true;
 
-    throw new UnauthorizedException('You has no permission to do this');
+    throw new ForbiddenException();
   }
 }

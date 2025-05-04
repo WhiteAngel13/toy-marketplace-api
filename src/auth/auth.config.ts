@@ -50,7 +50,7 @@ export class AuthMiddleware implements NestMiddleware {
     private readonly userService: UserService,
   ) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, _: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) return next();

@@ -23,7 +23,7 @@ export class ScalarModule {
       config.documentOptions,
     );
 
-    app.use(config.routes.json, (req: Request, res: Response) => {
+    app.use(config.routes.json, (_: Request, res: Response) => {
       res.json(swaggerDocument);
     });
 
