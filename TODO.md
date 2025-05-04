@@ -1,0 +1,13 @@
+- [ ] User
+- [ ] Store
+- [ ] Product
+- [ ] Category
+- [ ] Ads
+- [ ] Cart
+- [ ] Shipping
+- [ ] PaymentMethod
+- [ ] Coupon
+- [ ] Order
+- [ ] Notification
+- [ ] Busca de Categorias e Produtos
+- [ ] Listar Notificações de Usuário
