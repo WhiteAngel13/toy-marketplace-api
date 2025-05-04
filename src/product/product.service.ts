@@ -27,7 +27,7 @@ export type GetProductServiceResponseDTO<Options extends GetServiceOptions> = {
 };
 
 export type FindProductServiceParamsDTO = {
-  where: { id?: string };
+  where: { id?: string; store_id?: string };
 };
 
 export type FindProductServiceResponseDTO = {
@@ -83,6 +83,10 @@ export class ProductService {
 
     if (params.where.id) {
       wheres.push(eq(drizzleProductColumns.id, params.where.id));
+    }
+
+    if (params.where.store_id) {
+      wheres.push(eq(drizzleProductColumns.store_id, params.where.store_id));
     }
 
     dynamicQuery.where(and(...wheres));

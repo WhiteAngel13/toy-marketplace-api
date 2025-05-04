@@ -9,12 +9,20 @@ import { AuthGuard, AuthMiddleware } from 'src/auth/auth.config';
 import { StoreModule } from 'src/store/store.module';
 import { CategoryModule } from 'src/category/category.module';
 import { ProductModule } from 'src/product/product.module';
+import { AdModule } from 'src/ad/ad.module';
+import { CouponModule } from 'src/coupon/coupon.module';
+import { PaymentMethodModule } from 'src/payment-method/payment-method.module';
+import { ShippingModule } from 'src/shipping/shipping.module';
 
 @Module({
   imports: [
+    AdModule,
     AuthModule,
     CategoryModule,
+    CouponModule,
+    PaymentMethodModule,
     ProductModule,
+    ShippingModule,
     StoreModule,
     UserModule,
     DrizzleModule,
