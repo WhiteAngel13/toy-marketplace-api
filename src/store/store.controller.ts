@@ -1,0 +1,43 @@
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { StoreService } from './store.service';
+import { User } from 'src/user/user.entity';
+import { createZodDto } from 'nestjs-zod';
+import { Store, StoreSchema } from './store.entity';
+import { z } from 'zod';
+import { LoggedUser } from 'src/auth/auth.config';
+import { ReqStore } from './store.config';
+
+export const GetStoreControllerResponseSchema = z.object({
+  store: StoreSchema,
+});
+
+export class GetStoreControllerResponseDTO extends createZodDto(
+  GetStoreControllerResponseSchema,
+) {}
+
+export const CreateStoreControllerBodySchema = z.object({
+  name: z.string(),
+});
+
+export class CreateStoreControllerBodyDTO extends createZodDto(
+  CreateStoreControllerBodySchema,
+) {}
+
+@Controller()
+export class StoreController {
+  constructor(private readonly storeService: StoreService) {}
+
+  @Get('/v1/stores/:id')
+  get(@ReqStore() store: Store): GetStoreControllerResponseDTO {
+    return { store };
+  }
+
+  @Post('/v1/stores')
+  async create(
+    @Body() body: CreateStoreControllerBodyDTO,
+    @LoggedUser() user: User,
+  ): Promise<GetStoreControllerResponseDTO> {
+    const { store } = await this.storeService.create({ data: body, user });
+    return { store };
+  }
+}
