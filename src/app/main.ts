@@ -2,6 +2,9 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ScalarModule } from './scalar/scalar.module';
+import { patchNestJsSwagger } from 'nestjs-zod';
+
+patchNestJsSwagger();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +18,19 @@ async function bootstrap() {
         title: 'Mazonia API',
         description: 'Mazonia API',
         version: '1.0.0',
+      },
+      security: [
+        {
+          BearerAuth: [],
+        },
+      ],
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+          },
+        },
       },
       openapi: '3.0.0',
       servers: [{ url: baseUrl }],

@@ -1,4 +1,8 @@
-- [ ] User
+- [x] Auth
+  - [x] SignIn
+  - [x] SignUp
+- [x] User
+  - [x] Me
 - [ ] Store
 - [ ] Product
 - [ ] Category
