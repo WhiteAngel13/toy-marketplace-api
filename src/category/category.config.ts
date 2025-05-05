@@ -30,6 +30,7 @@ export class CategoryMiddleware implements NestMiddleware {
     });
 
     req['category'] = category;
+    next();
   }
 }
 

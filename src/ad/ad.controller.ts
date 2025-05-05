@@ -15,6 +15,13 @@ import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 import { ProductService } from 'src/product/product.service';
 
+export const ListAdControllerResponseSchema = z.object({
+  ads: z.array(AdSchema),
+});
+export class ListAdControllerResponseDTO extends createZodDto(
+  ListAdControllerResponseSchema,
+) {}
+
 export const GetAdControllerResponseSchema = z.object({
   ad: AdSchema,
 });
@@ -40,6 +47,14 @@ export class AdController {
     private readonly productService: ProductService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/ads')
+  async find(): Promise<ListAdControllerResponseDTO> {
+    const { ads } = await this.adService.find({
+      where: {},
+    });
+    return { ads };
+  }
 
   @Get('/v1/ads/:id')
   get(@ReqAd() ad: Ad): GetAdControllerResponseDTO {

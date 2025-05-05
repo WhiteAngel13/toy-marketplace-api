@@ -6,12 +6,12 @@
 - [x] Store
 - [x] Product
 - [x] Category
-- [ ] Ads
-- [ ] Cart
-- [ ] Shipping
-- [ ] PaymentMethod
-- [ ] Coupon
+- [x] Ads
+- [x] Cart
+- [x] Shipping
+- [x] PaymentMethod
+- [x] Coupon
 - [ ] Order
-- [ ] Notification
+- [x] Notification
 - [ ] Busca de Categorias e Produtos
 - [ ] Listar Notificações de Usuário

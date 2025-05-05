@@ -31,6 +31,7 @@ export class PaymentMethodMiddleware implements NestMiddleware {
     });
 
     req['payment_method'] = paymentMethod;
+    next();
   }
 }
 

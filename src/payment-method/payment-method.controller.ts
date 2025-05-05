@@ -14,6 +14,14 @@ import { ReqPaymentMethod } from './payment-method.config';
 import { PaymentMethodSchema, PaymentMethod } from './payment-method.entity';
 import { PaymentMethodService } from './payment-method.service';
 
+export const ListPaymentMethodControllerResponseSchema = z.object({
+  payment_methods: z.array(PaymentMethodSchema),
+});
+
+export class ListPaymentMethodControllerResponseDTO extends createZodDto(
+  ListPaymentMethodControllerResponseSchema,
+) {}
+
 export const GetPaymentMethodControllerResponseSchema = z.object({
   payment_method: PaymentMethodSchema,
 });
@@ -40,6 +48,14 @@ export class PaymentMethodController {
     private readonly paymentMethodService: PaymentMethodService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/payment_methods')
+  async find(): Promise<ListPaymentMethodControllerResponseDTO> {
+    const { paymentMethods } = await this.paymentMethodService.find({
+      where: {},
+    });
+    return { payment_methods: paymentMethods };
+  }
 
   @Get('/v1/payment_methods/:id')
   get(

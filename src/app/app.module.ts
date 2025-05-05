@@ -13,13 +13,19 @@ import { AdModule } from 'src/ad/ad.module';
 import { CouponModule } from 'src/coupon/coupon.module';
 import { PaymentMethodModule } from 'src/payment-method/payment-method.module';
 import { ShippingModule } from 'src/shipping/shipping.module';
+import { CartModule } from 'src/cart/cart.module';
+import { NotificationModule } from 'src/notification/notification.module';
+import { OrderModule } from 'src/order/order.module';
 
 @Module({
   imports: [
     AdModule,
     AuthModule,
+    CartModule,
     CategoryModule,
     CouponModule,
+    NotificationModule,
+    OrderModule,
     PaymentMethodModule,
     ProductModule,
     ShippingModule,

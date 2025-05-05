@@ -14,6 +14,14 @@ import { LoggedUser } from 'src/auth/auth.config';
 import { ReqCategory } from './category.config';
 import { StoreService } from 'src/store/store.service';
 
+export const ListCategoryControllerResponseSchema = z.object({
+  categories: z.array(CategorySchema),
+});
+
+export class ListCategoryControllerResponseDTO extends createZodDto(
+  ListCategoryControllerResponseSchema,
+) {}
+
 export const GetCategoryControllerResponseSchema = z.object({
   category: CategorySchema,
 });
@@ -38,6 +46,14 @@ export class CategoryController {
     private readonly categoryService: CategoryService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/categories')
+  async find(): Promise<ListCategoryControllerResponseDTO> {
+    const { categories } = await this.categoryService.find({
+      where: {},
+    });
+    return { categories };
+  }
 
   @Get('/v1/categories/:id')
   get(@ReqCategory() category: Category): GetCategoryControllerResponseDTO {

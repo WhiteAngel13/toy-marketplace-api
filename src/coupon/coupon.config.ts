@@ -30,6 +30,7 @@ export class CouponMiddleware implements NestMiddleware {
     });
 
     req['coupon'] = coupon;
+    next();
   }
 }
 

@@ -14,6 +14,14 @@ import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 
+export const ListCouponControllerResponseSchema = z.object({
+  coupons: z.array(CouponSchema),
+});
+
+export class ListCouponControllerResponseDTO extends createZodDto(
+  ListCouponControllerResponseSchema,
+) {}
+
 export const GetCouponControllerResponseSchema = z.object({
   coupon: CouponSchema,
 });
@@ -38,6 +46,14 @@ export class CouponController {
     private readonly couponService: CouponService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/coupons')
+  async find(): Promise<ListCouponControllerResponseDTO> {
+    const { coupons } = await this.couponService.find({
+      where: {},
+    });
+    return { coupons };
+  }
 
   @Get('/v1/coupons/:id')
   get(@ReqCoupon() coupon: Coupon): GetCouponControllerResponseDTO {

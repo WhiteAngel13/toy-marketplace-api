@@ -30,6 +30,7 @@ export class ProductMiddleware implements NestMiddleware {
     });
 
     req['product'] = product;
+    next();
   }
 }
 

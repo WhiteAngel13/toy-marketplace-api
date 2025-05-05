@@ -30,6 +30,7 @@ export class ShippingMiddleware implements NestMiddleware {
     });
 
     req['shipping'] = shipping;
+    next();
   }
 }
 

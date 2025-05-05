@@ -14,6 +14,13 @@ import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 
+export const ListShippingControllerResponseSchema = z.object({
+  shippings: z.array(ShippingSchema),
+});
+export class ListShippingControllerResponseDTO extends createZodDto(
+  ListShippingControllerResponseSchema,
+) {}
+
 export const GetShippingControllerResponseSchema = z.object({
   shipping: ShippingSchema,
 });
@@ -40,6 +47,14 @@ export class ShippingController {
     private readonly shippingService: ShippingService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/shippings')
+  async find(): Promise<ListShippingControllerResponseDTO> {
+    const { shippings } = await this.shippingService.find({
+      where: {},
+    });
+    return { shippings };
+  }
 
   @Get('/v1/shippings/:id')
   get(@ReqShipping() shipping: Shipping): GetShippingControllerResponseDTO {

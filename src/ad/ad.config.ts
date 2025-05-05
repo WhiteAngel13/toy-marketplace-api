@@ -30,6 +30,7 @@ export class AdMiddleware implements NestMiddleware {
     });
 
     req['ad'] = ad;
+    next();
   }
 }
 

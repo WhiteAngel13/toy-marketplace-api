@@ -41,6 +41,7 @@ export class StoreMiddleware implements NestMiddleware {
     });
 
     req['store'] = store;
+    next();
   }
 }
 

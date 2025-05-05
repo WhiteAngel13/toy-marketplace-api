@@ -7,6 +7,14 @@ import { z } from 'zod';
 import { LoggedUser } from 'src/auth/auth.config';
 import { ReqStore } from './store.config';
 
+export const ListStoreControllerResponseSchema = z.object({
+  stores: z.array(StoreSchema),
+});
+
+export class ListStoreControllerResponseDTO extends createZodDto(
+  ListStoreControllerResponseSchema,
+) {}
+
 export const GetStoreControllerResponseSchema = z.object({
   store: StoreSchema,
 });
@@ -26,6 +34,14 @@ export class CreateStoreControllerBodyDTO extends createZodDto(
 @Controller()
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
+
+  @Get('/v1/stores')
+  async find(): Promise<ListStoreControllerResponseDTO> {
+    const { stores } = await this.storeService.find({
+      where: {},
+    });
+    return { stores };
+  }
 
   @Get('/v1/stores/:id')
   get(@ReqStore() store: Store): GetStoreControllerResponseDTO {

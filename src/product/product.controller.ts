@@ -15,6 +15,14 @@ import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 
+export const ListProductControllerResponseSchema = z.object({
+  products: z.array(ProductSchema),
+});
+
+export class ListProductControllerResponseDTO extends createZodDto(
+  ListProductControllerResponseSchema,
+) {}
+
 export const GetProductControllerResponseSchema = z.object({
   product: ProductSchema,
 });
@@ -42,6 +50,14 @@ export class ProductController {
     private readonly categoryService: CategoryService,
     private readonly storeService: StoreService,
   ) {}
+
+  @Get('/v1/products')
+  async find(): Promise<ListProductControllerResponseDTO> {
+    const { products } = await this.productService.find({
+      where: {},
+    });
+    return { products };
+  }
 
   @Get('/v1/products/:id')
   get(@ReqProduct() product: Product): GetProductControllerResponseDTO {
