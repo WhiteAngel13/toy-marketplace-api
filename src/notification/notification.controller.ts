@@ -6,6 +6,7 @@ import { Notification, NotificationSchema } from './notification.entity';
 import { z } from 'zod';
 import { LoggedUser } from 'src/auth/auth.config';
 import { ReqNotification } from './notification.config';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListNotificationControllerResponseSchema = z.object({
   notifications: z.array(NotificationSchema),
@@ -31,11 +32,14 @@ export class CreateNotificationControllerBodyDTO extends createZodDto(
   CreateNotificationControllerBodySchema,
 ) {}
 
+const tags = ['Notificações'];
+
 @Controller()
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get('/v1/notifications')
+  @ApiOperation({ summary: 'Listagem de Notificações', tags })
   async find(
     @LoggedUser() user: User,
   ): Promise<ListNotificationControllerResponseDTO> {
@@ -46,6 +50,7 @@ export class NotificationController {
   }
 
   @Get('/v1/notifications/:id')
+  @ApiOperation({ summary: 'Detalhes de Notificação por ID', tags })
   get(
     @ReqNotification() notification: Notification,
   ): GetNotificationControllerResponseDTO {

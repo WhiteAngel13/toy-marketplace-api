@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { LoggedUser } from 'src/auth/auth.config';
 import { ReqCategory } from './category.config';
 import { StoreService } from 'src/store/store.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListCategoryControllerResponseSchema = z.object({
   categories: z.array(CategorySchema),
@@ -40,6 +41,8 @@ export class CreateCategoryControllerBodyDTO extends createZodDto(
   CreateCategoryControllerBodySchema,
 ) {}
 
+const tags = ['Categorias'];
+
 @Controller()
 export class CategoryController {
   constructor(
@@ -48,6 +51,7 @@ export class CategoryController {
   ) {}
 
   @Get('/v1/categories')
+  @ApiOperation({ summary: 'Listagem de Categorias', tags })
   async find(): Promise<ListCategoryControllerResponseDTO> {
     const { categories } = await this.categoryService.find({
       where: {},
@@ -56,11 +60,13 @@ export class CategoryController {
   }
 
   @Get('/v1/categories/:id')
+  @ApiOperation({ summary: 'Detalhes de uma Categoria por ID', tags })
   get(@ReqCategory() category: Category): GetCategoryControllerResponseDTO {
     return { category };
   }
 
   @Post('/v1/categories')
+  @ApiOperation({ summary: 'Criar uma Categoria', tags })
   async create(
     @Body() body: CreateCategoryControllerBodyDTO,
     @LoggedUser() user: User,

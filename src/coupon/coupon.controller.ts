@@ -13,6 +13,7 @@ import { ReqCoupon } from './coupon.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListCouponControllerResponseSchema = z.object({
   coupons: z.array(CouponSchema),
@@ -40,6 +41,8 @@ export class CreateCouponControllerBodyDTO extends createZodDto(
   CreateCouponControllerBodySchema,
 ) {}
 
+const tags = ['Cupons'];
+
 @Controller()
 export class CouponController {
   constructor(
@@ -48,6 +51,7 @@ export class CouponController {
   ) {}
 
   @Get('/v1/coupons')
+  @ApiOperation({ summary: 'Listagem de Cupons', tags })
   async find(): Promise<ListCouponControllerResponseDTO> {
     const { coupons } = await this.couponService.find({
       where: {},
@@ -56,11 +60,13 @@ export class CouponController {
   }
 
   @Get('/v1/coupons/:id')
+  @ApiOperation({ summary: 'Detalhes do Cupom por ID', tags })
   get(@ReqCoupon() coupon: Coupon): GetCouponControllerResponseDTO {
     return { coupon };
   }
 
   @Post('/v1/coupons')
+  @ApiOperation({ summary: 'Criar Cupom', tags })
   async create(
     @Body() body: CreateCouponControllerBodyDTO,
     @LoggedUser() user: User,

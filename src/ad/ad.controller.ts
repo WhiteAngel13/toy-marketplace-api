@@ -14,6 +14,7 @@ import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 import { ProductService } from 'src/product/product.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListAdControllerResponseSchema = z.object({
   ads: z.array(AdSchema),
@@ -40,6 +41,8 @@ export class CreateAdControllerBodyDTO extends createZodDto(
   CreateAdControllerBodySchema,
 ) {}
 
+const tags = ['Anúncios'];
+
 @Controller()
 export class AdController {
   constructor(
@@ -48,6 +51,7 @@ export class AdController {
     private readonly storeService: StoreService,
   ) {}
 
+  @ApiOperation({ summary: 'Listagem de Anúncios', tags })
   @Get('/v1/ads')
   async find(): Promise<ListAdControllerResponseDTO> {
     const { ads } = await this.adService.find({
@@ -56,11 +60,13 @@ export class AdController {
     return { ads };
   }
 
+  @ApiOperation({ summary: 'Detalhes do Anúncio por ID', tags })
   @Get('/v1/ads/:id')
   get(@ReqAd() ad: Ad): GetAdControllerResponseDTO {
     return { ad };
   }
 
+  @ApiOperation({ summary: 'Criar Anúncio', tags })
   @Post('/v1/ads')
   async create(
     @Body() body: CreateAdControllerBodyDTO,

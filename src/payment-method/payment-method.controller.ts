@@ -13,6 +13,7 @@ import { User } from 'src/user/user.entity';
 import { ReqPaymentMethod } from './payment-method.config';
 import { PaymentMethodSchema, PaymentMethod } from './payment-method.entity';
 import { PaymentMethodService } from './payment-method.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListPaymentMethodControllerResponseSchema = z.object({
   payment_methods: z.array(PaymentMethodSchema),
@@ -42,6 +43,7 @@ export class CreatePaymentMethodControllerBodyDTO extends createZodDto(
   CreatePaymentMethodControllerBodySchema,
 ) {}
 
+const tags = ['Métodos de Pagamento'];
 @Controller()
 export class PaymentMethodController {
   constructor(
@@ -50,6 +52,7 @@ export class PaymentMethodController {
   ) {}
 
   @Get('/v1/payment_methods')
+  @ApiOperation({ summary: 'Listagem de Métodos de Pagamento', tags })
   async find(): Promise<ListPaymentMethodControllerResponseDTO> {
     const { paymentMethods } = await this.paymentMethodService.find({
       where: {},
@@ -58,6 +61,7 @@ export class PaymentMethodController {
   }
 
   @Get('/v1/payment_methods/:id')
+  @ApiOperation({ summary: 'Detalhes de um Método de Pagamento por ID', tags })
   get(
     @ReqPaymentMethod() paymentMethod: PaymentMethod,
   ): GetPaymentMethodControllerResponseDTO {
@@ -65,6 +69,7 @@ export class PaymentMethodController {
   }
 
   @Post('/v1/payment_methods')
+  @ApiOperation({ summary: 'Criar um Método de Pagamento', tags })
   async create(
     @Body() body: CreatePaymentMethodControllerBodyDTO,
     @LoggedUser() user: User,

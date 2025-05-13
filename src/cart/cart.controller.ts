@@ -16,6 +16,7 @@ import { User } from 'src/user/user.entity';
 import { CartService } from './cart.service';
 import { StoreService } from 'src/store/store.service';
 import { ProductService } from 'src/product/product.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const GetMeCartControllerQuerySchema = z.object({
   store_id: z.string(),
@@ -60,6 +61,8 @@ export class UpdateProductCartControllerBodyDTO extends createZodDto(
   UpdateProductCartControllerBodySchema,
 ) {}
 
+const tags = ['Carrinho'];
+
 @Controller()
 export class CartController {
   constructor(
@@ -69,6 +72,7 @@ export class CartController {
   ) {}
 
   @Get('/v1/carts/me')
+  @ApiOperation({ summary: 'Carrinho do Usuário', tags })
   async getMe(
     @LoggedUser() user: User,
     @Query() query: GetMeCartControllerQueryDTO,
@@ -87,11 +91,13 @@ export class CartController {
   }
 
   @Get('/v1/carts/:id')
+  @ApiOperation({ summary: 'Detalhes do Carrinho por ID', tags })
   get(@ReqCart() cart: Cart): GetCartControllerResponseDTO {
     return { cart };
   }
 
   @Post('/v1/carts/:id/products')
+  @ApiOperation({ summary: 'Adicionar Produto ao Carrinho', tags })
   async addProduct(
     @ReqCart() cart: Cart,
     @Body() body: AddProductCartControllerBodyDTO,
@@ -116,6 +122,7 @@ export class CartController {
   }
 
   @Put('/v1/carts/:id/products/:cart_product_id')
+  @ApiOperation({ summary: 'Atualizar Produto do Carrinho', tags })
   async updateProduct(
     @ReqCart() cart: Cart,
     @ReqCartProduct() cartProduct: CartProduct,
@@ -136,6 +143,7 @@ export class CartController {
   }
 
   @Delete('/v1/carts/:id/products/:cart_product_id')
+  @ApiOperation({ summary: 'Remover Produto do Carrinho', tags })
   async deleteProduct(
     @ReqCart() cart: Cart,
     @ReqCartProduct() cartProduct: CartProduct,

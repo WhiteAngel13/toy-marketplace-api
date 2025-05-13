@@ -14,6 +14,7 @@ import { CategoryService } from 'src/category/category.service';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListProductControllerResponseSchema = z.object({
   products: z.array(ProductSchema),
@@ -43,6 +44,8 @@ export class CreateProductControllerBodyDTO extends createZodDto(
   CreateProductControllerBodySchema,
 ) {}
 
+const tags = ['Produtos'];
+
 @Controller()
 export class ProductController {
   constructor(
@@ -52,6 +55,7 @@ export class ProductController {
   ) {}
 
   @Get('/v1/products')
+  @ApiOperation({ summary: 'Listagem de Produtos', tags })
   async find(): Promise<ListProductControllerResponseDTO> {
     const { products } = await this.productService.find({
       where: {},
@@ -60,11 +64,13 @@ export class ProductController {
   }
 
   @Get('/v1/products/:id')
+  @ApiOperation({ summary: 'Detalhes de um Produto por ID', tags })
   get(@ReqProduct() product: Product): GetProductControllerResponseDTO {
     return { product };
   }
 
   @Post('/v1/products')
+  @ApiOperation({ summary: 'Criação de Produto', tags })
   async create(
     @Body() body: CreateProductControllerBodyDTO,
     @LoggedUser() user: User,

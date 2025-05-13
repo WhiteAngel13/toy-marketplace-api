@@ -13,6 +13,7 @@ import { ReqShipping } from './shipping.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListShippingControllerResponseSchema = z.object({
   shippings: z.array(ShippingSchema),
@@ -41,6 +42,8 @@ export class CreateShippingControllerBodyDTO extends createZodDto(
   CreateShippingControllerBodySchema,
 ) {}
 
+const tags = ['Fretes'];
+
 @Controller()
 export class ShippingController {
   constructor(
@@ -49,6 +52,7 @@ export class ShippingController {
   ) {}
 
   @Get('/v1/shippings')
+  @ApiOperation({ summary: 'Listagem de Fretes', tags })
   async find(): Promise<ListShippingControllerResponseDTO> {
     const { shippings } = await this.shippingService.find({
       where: {},
@@ -57,11 +61,13 @@ export class ShippingController {
   }
 
   @Get('/v1/shippings/:id')
+  @ApiOperation({ summary: 'Detalhes de Frete por ID', tags })
   get(@ReqShipping() shipping: Shipping): GetShippingControllerResponseDTO {
     return { shipping };
   }
 
   @Post('/v1/shippings')
+  @ApiOperation({ summary: 'Criação de Frete', tags })
   async create(
     @Body() body: CreateShippingControllerBodyDTO,
     @LoggedUser() user: User,

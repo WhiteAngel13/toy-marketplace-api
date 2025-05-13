@@ -32,12 +32,13 @@ export class CreateStoreControllerBodyDTO extends createZodDto(
   CreateStoreControllerBodySchema,
 ) {}
 
+const tags = ['Lojas'];
 @Controller()
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
-  @ApiOperation({ summary: 'List stores' })
   @Get('/v1/stores')
+  @ApiOperation({ summary: 'Listagem de Lojas', tags })
   async find(): Promise<ListStoreControllerResponseDTO> {
     const { stores } = await this.storeService.find({
       where: {},
@@ -46,11 +47,13 @@ export class StoreController {
   }
 
   @Get('/v1/stores/:id')
+  @ApiOperation({ summary: 'Detalhes de uma Loja por ID', tags })
   get(@ReqStore() store: Store): GetStoreControllerResponseDTO {
     return { store };
   }
 
   @Post('/v1/stores')
+  @ApiOperation({ summary: 'Criação de Lojas', tags })
   async create(
     @Body() body: CreateStoreControllerBodyDTO,
     @LoggedUser() user: User,

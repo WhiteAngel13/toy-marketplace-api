@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { IsPublic } from './auth.config';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const SignInAuthControllerBodySchema = z.object({
   email: z.string().email(),
@@ -38,6 +39,8 @@ export class SignUpAuthControllerResponseDTO extends createZodDto(
   SignUpAuthControllerResponseSchema,
 ) {}
 
+const tags = ['Autenticação'];
+
 @Controller()
 export class AuthController {
   constructor(
@@ -46,6 +49,7 @@ export class AuthController {
   ) {}
 
   @IsPublic()
+  @ApiOperation({ summary: 'Fazer Login', tags })
   @Post('/v1/auth/signin')
   async signIn(
     @Body() body: SignInAuthControllerBodyDTO,
@@ -64,6 +68,7 @@ export class AuthController {
   }
 
   @IsPublic()
+  @ApiOperation({ summary: 'Criar Conta', tags })
   @Post('/v1/auth/signup')
   async signUp(
     @Body() body: SignUpAuthControllerBodyDTO,
