@@ -6,6 +6,7 @@ import { Store, StoreSchema } from './store.entity';
 import { z } from 'zod';
 import { LoggedUser } from 'src/auth/auth.config';
 import { ReqStore } from './store.config';
+import { ApiOperation } from '@nestjs/swagger';
 
 export const ListStoreControllerResponseSchema = z.object({
   stores: z.array(StoreSchema),
@@ -35,6 +36,7 @@ export class CreateStoreControllerBodyDTO extends createZodDto(
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  @ApiOperation({ summary: 'List stores' })
   @Get('/v1/stores')
   async find(): Promise<ListStoreControllerResponseDTO> {
     const { stores } = await this.storeService.find({
