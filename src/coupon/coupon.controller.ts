@@ -33,7 +33,7 @@ export class GetCouponControllerResponseDTO extends createZodDto(
 
 export const CreateCouponControllerBodySchema = z.object({
   code: z.string(),
-  discount: z.number(),
+  discount: z.number().positive().min(1),
   store_id: z.string(),
 });
 
