@@ -34,16 +34,6 @@ export class GetCartControllerResponseDTO extends createZodDto(
   GetCartControllerResponseSchema,
 ) {}
 
-export const CreateCartControllerBodySchema = z.object({
-  code: z.string(),
-  discount: z.number(),
-  store_id: z.string(),
-});
-
-export class CreateCartControllerBodyDTO extends createZodDto(
-  CreateCartControllerBodySchema,
-) {}
-
 export const AddProductCartControllerBodySchema = z.object({
   product_id: z.string(),
   quantity: z.number(),
