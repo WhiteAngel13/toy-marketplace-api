@@ -1,19 +1,19 @@
 import { Controller, Get } from '@nestjs/common';
-import { User, UserSchema } from './user.entity';
+import { User } from './user.entity';
 import { LoggedUser } from 'src/auth/auth.config';
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const RestUserSchema = UserSchema.omit({ password_hash: true });
+class RestUser extends OmitType(User, ['password_hash'] as const) {}
 
-export const GetMeUserControllerResponseSchema = z.object({
-  user: RestUserSchema,
-});
-
-export class GetMeUserControllerResponseDTO extends createZodDto(
-  GetMeUserControllerResponseSchema,
-) {}
+export class GetMeUserControllerResponseDTO {
+  @ApiProperty({ type: RestUser })
+  user!: RestUser;
+}
 
 const tags = ['Usuários'];
 
@@ -21,7 +21,8 @@ const tags = ['Usuários'];
 export class UserController {
   @Get('/v1/users/me')
   @ApiOperation({ summary: 'Detalhes do Usuário Logado', tags })
+  @ApiResponse({ type: GetMeUserControllerResponseDTO })
   getMe(@LoggedUser() user: User): GetMeUserControllerResponseDTO {
-    return { user: RestUserSchema.parse(user) };
+    return { user };
   }
 }

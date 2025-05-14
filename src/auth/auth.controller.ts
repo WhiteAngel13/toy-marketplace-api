@@ -3,41 +3,59 @@ import { UserService } from 'src/user/user.service';
 import { hash, verify } from 'argon2';
 import { User } from 'src/user/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
 import { IsPublic } from './auth.config';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
+import { IsEmail, IsString } from 'class-validator';
 
-export const SignInAuthControllerBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-export class SignInAuthControllerBodyDTO extends createZodDto(
-  SignInAuthControllerBodySchema,
-) {}
-export const SignInAuthControllerResponseSchema = z.object({
-  auth_token: z.string(),
-});
-export class SignInAuthControllerResponseDTO extends createZodDto(
-  SignInAuthControllerResponseSchema,
-) {}
+export class SignInAuthControllerBodyDTO {
+  @IsEmail()
+  @ApiProperty({
+    description: 'Email do usuário',
+    example: 'teste@gmail.com',
+  })
+  email!: string;
 
-export const SignUpAuthControllerBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
+  @IsString()
+  @ApiProperty({
+    description: 'Senha do usuário',
+    example: '123456',
+  })
+  password!: string;
+}
 
-export class SignUpAuthControllerBodyDTO extends createZodDto(
-  SignUpAuthControllerBodySchema,
-) {}
+export class SignInAuthControllerResponseDTO {
+  @IsString()
+  @ApiProperty({
+    description: 'Token de autenticação',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  auth_token!: string;
+}
 
-export const SignUpAuthControllerResponseSchema = z.object({
-  auth_token: z.string(),
-});
+export class SignUpAuthControllerBodyDTO {
+  @IsEmail()
+  @ApiProperty({
+    description: 'Email do usuário',
+    example: 'teste@gmail.com',
+  })
+  email!: string;
 
-export class SignUpAuthControllerResponseDTO extends createZodDto(
-  SignUpAuthControllerResponseSchema,
-) {}
+  @IsString()
+  @ApiProperty({
+    description: 'Senha do usuário',
+    example: '123456',
+  })
+  password!: string;
+}
+
+export class SignUpAuthControllerResponseDTO {
+  @IsString()
+  @ApiProperty({
+    description: 'Token de autenticação',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  auth_token!: string;
+}
 
 const tags = ['Autenticação'];
 
@@ -49,8 +67,9 @@ export class AuthController {
   ) {}
 
   @IsPublic()
-  @ApiOperation({ summary: 'Fazer Login', tags })
   @Post('/v1/auth/signin')
+  @ApiOperation({ summary: 'Fazer Login', tags })
+  @ApiResponse({ type: SignInAuthControllerResponseDTO })
   async signIn(
     @Body() body: SignInAuthControllerBodyDTO,
   ): Promise<SignInAuthControllerResponseDTO> {
@@ -68,8 +87,9 @@ export class AuthController {
   }
 
   @IsPublic()
-  @ApiOperation({ summary: 'Criar Conta', tags })
   @Post('/v1/auth/signup')
+  @ApiOperation({ summary: 'Criar Conta', tags })
+  @ApiResponse({ type: SignUpAuthControllerResponseDTO })
   async signUp(
     @Body() body: SignUpAuthControllerBodyDTO,
   ): Promise<SignUpAuthControllerResponseDTO> {

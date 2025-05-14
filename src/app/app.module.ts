@@ -1,7 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe,
+} from '@nestjs/common';
 import { JwtModule } from './jwt.module';
 import { APP_PIPE, APP_GUARD } from '@nestjs/core';
-import { ZodValidationPipe } from 'nestjs-zod';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { DrizzleModule } from './drizzle/drizzle.module';
@@ -37,7 +41,7 @@ import { OrderModule } from 'src/order/order.module';
   providers: [
     {
       provide: APP_PIPE,
-      useClass: ZodValidationPipe,
+      useValue: new ValidationPipe({ whitelist: true, transform: true }),
     },
     {
       provide: APP_GUARD,

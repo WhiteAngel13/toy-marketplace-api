@@ -6,40 +6,33 @@ import {
   Post,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
-import { createZodDto } from 'nestjs-zod';
-import { Coupon, CouponSchema } from './coupon.entity';
-import { z } from 'zod';
+import { Coupon } from './coupon.entity';
 import { ReqCoupon } from './coupon.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const ListCouponControllerResponseSchema = z.object({
-  coupons: z.array(CouponSchema),
-});
+export class ListCouponControllerResponseDTO {
+  @ApiProperty({ type: [Coupon] })
+  coupons!: Coupon[];
+}
 
-export class ListCouponControllerResponseDTO extends createZodDto(
-  ListCouponControllerResponseSchema,
-) {}
+export class GetCouponControllerResponseDTO {
+  @ApiProperty({ type: Coupon })
+  coupon!: Coupon;
+}
 
-export const GetCouponControllerResponseSchema = z.object({
-  coupon: CouponSchema,
-});
-
-export class GetCouponControllerResponseDTO extends createZodDto(
-  GetCouponControllerResponseSchema,
-) {}
-
-export const CreateCouponControllerBodySchema = z.object({
-  code: z.string(),
-  discount: z.number().positive().min(1),
-  store_id: z.string(),
-});
-
-export class CreateCouponControllerBodyDTO extends createZodDto(
-  CreateCouponControllerBodySchema,
-) {}
+export class CreateCouponControllerBodyDTO extends OmitType(Coupon, [
+  'id',
+  'created_at',
+  'updated_at',
+]) {}
 
 const tags = ['Cupons'];
 
@@ -52,6 +45,7 @@ export class CouponController {
 
   @Get('/v1/coupons')
   @ApiOperation({ summary: 'Listagem de Cupons', tags })
+  @ApiResponse({ type: ListCouponControllerResponseDTO })
   async find(): Promise<ListCouponControllerResponseDTO> {
     const { coupons } = await this.couponService.find({
       where: {},
@@ -61,12 +55,14 @@ export class CouponController {
 
   @Get('/v1/coupons/:id')
   @ApiOperation({ summary: 'Detalhes do Cupom por ID', tags })
+  @ApiResponse({ type: GetCouponControllerResponseDTO })
   get(@ReqCoupon() coupon: Coupon): GetCouponControllerResponseDTO {
     return { coupon };
   }
 
   @Post('/v1/coupons')
   @ApiOperation({ summary: 'Criar Cupom', tags })
+  @ApiResponse({ type: GetCouponControllerResponseDTO })
   async create(
     @Body() body: CreateCouponControllerBodyDTO,
     @LoggedUser() user: User,

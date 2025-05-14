@@ -8,11 +8,12 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { plainToInstance } from 'class-transformer';
+import { IsString, validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { z } from 'zod';
 
 export const IsPublic = Reflector.createDecorator();
 
@@ -41,7 +42,10 @@ export class AuthGuard implements CanActivate {
   }
 }
 
-const ExpectedPayloadSchema = z.object({ sub: z.string() });
+class ExpectedPayload {
+  @IsString()
+  sub!: string;
+}
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -56,11 +60,13 @@ export class AuthMiddleware implements NestMiddleware {
     if (!token) return next();
 
     const decoded = this.jwtService.decode<unknown>(token);
-    const parsedPayload = ExpectedPayloadSchema.safeParse(decoded);
-    if (!parsedPayload.success) return next();
+    const parsedToDto = plainToInstance(ExpectedPayload, decoded);
+
+    const errors = await validate(parsedToDto);
+    if (errors.length > 0) return next();
 
     const { user } = await this.userService.get({
-      where: { id: parsedPayload.data.sub },
+      where: { id: parsedToDto.sub },
       options: { throwIfNotFound: true },
     });
 

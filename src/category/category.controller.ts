@@ -7,39 +7,32 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { User } from 'src/user/user.entity';
-import { createZodDto } from 'nestjs-zod';
-import { Category, CategorySchema } from './category.entity';
-import { z } from 'zod';
+import { Category } from './category.entity';
 import { LoggedUser } from 'src/auth/auth.config';
 import { ReqCategory } from './category.config';
 import { StoreService } from 'src/store/store.service';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const ListCategoryControllerResponseSchema = z.object({
-  categories: z.array(CategorySchema),
-});
+export class ListCategoryControllerResponseDTO {
+  @ApiProperty({ type: [Category] })
+  categories!: Category[];
+}
 
-export class ListCategoryControllerResponseDTO extends createZodDto(
-  ListCategoryControllerResponseSchema,
-) {}
+export class GetCategoryControllerResponseDTO {
+  @ApiProperty({ type: Category })
+  category!: Category;
+}
 
-export const GetCategoryControllerResponseSchema = z.object({
-  category: CategorySchema,
-});
-
-export class GetCategoryControllerResponseDTO extends createZodDto(
-  GetCategoryControllerResponseSchema,
-) {}
-
-export const CreateCategoryControllerBodySchema = z.object({
-  name: z.string(),
-  image_url: z.string(),
-  store_id: z.string(),
-});
-
-export class CreateCategoryControllerBodyDTO extends createZodDto(
-  CreateCategoryControllerBodySchema,
-) {}
+export class CreateCategoryControllerBodyDTO extends OmitType(Category, [
+  'id',
+  'created_at',
+  'updated_at',
+]) {}
 
 const tags = ['Categorias'];
 
@@ -52,6 +45,7 @@ export class CategoryController {
 
   @Get('/v1/categories')
   @ApiOperation({ summary: 'Listagem de Categorias', tags })
+  @ApiResponse({ type: ListCategoryControllerResponseDTO })
   async find(): Promise<ListCategoryControllerResponseDTO> {
     const { categories } = await this.categoryService.find({
       where: {},
@@ -61,12 +55,14 @@ export class CategoryController {
 
   @Get('/v1/categories/:id')
   @ApiOperation({ summary: 'Detalhes de uma Categoria por ID', tags })
+  @ApiResponse({ type: GetCategoryControllerResponseDTO })
   get(@ReqCategory() category: Category): GetCategoryControllerResponseDTO {
     return { category };
   }
 
   @Post('/v1/categories')
   @ApiOperation({ summary: 'Criar uma Categoria', tags })
+  @ApiResponse({ type: GetCategoryControllerResponseDTO })
   async create(
     @Body() body: CreateCategoryControllerBodyDTO,
     @LoggedUser() user: User,

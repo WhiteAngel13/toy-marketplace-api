@@ -1,11 +1,38 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { IsString } from 'class-validator';
+import { randomUUID } from 'crypto';
 
-export const UserSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  password_hash: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
+export class User {
+  @IsString()
+  @ApiProperty({
+    description: 'ID do usuário',
+    example: randomUUID(),
+  })
+  id!: string;
 
-export type User = z.infer<typeof UserSchema>;
+  @IsString()
+  @ApiProperty({
+    description: 'Email do usuário',
+    example: 'teste@gmail.com',
+  })
+  email!: string;
+
+  @IsString()
+  @Exclude()
+  password_hash!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de criação do usuário',
+    example: new Date().toISOString(),
+  })
+  created_at!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de atualização do usuário',
+    example: new Date().toISOString(),
+  })
+  updated_at!: string;
+}

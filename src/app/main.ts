@@ -2,9 +2,6 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ScalarModule } from './scalar.module';
-import { patchNestJsSwagger } from 'nestjs-zod';
-
-patchNestJsSwagger();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

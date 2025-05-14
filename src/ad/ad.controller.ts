@@ -6,40 +6,34 @@ import {
   Post,
 } from '@nestjs/common';
 import { AdService } from './ad.service';
-import { createZodDto } from 'nestjs-zod';
-import { Ad, AdSchema } from './ad.entity';
-import { z } from 'zod';
+import { Ad } from './ad.entity';
 import { ReqAd } from './ad.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 import { ProductService } from 'src/product/product.service';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const ListAdControllerResponseSchema = z.object({
-  ads: z.array(AdSchema),
-});
-export class ListAdControllerResponseDTO extends createZodDto(
-  ListAdControllerResponseSchema,
-) {}
+export class ListAdControllerResponseDTO {
+  @ApiProperty({ type: [Ad] })
+  ads!: Ad[];
+}
 
-export const GetAdControllerResponseSchema = z.object({
-  ad: AdSchema,
-});
+export class GetAdControllerResponseDTO {
+  @ApiProperty({ type: Ad })
+  ad!: Ad;
+}
 
-export class GetAdControllerResponseDTO extends createZodDto(
-  GetAdControllerResponseSchema,
-) {}
-
-export const CreateAdControllerBodySchema = z.object({
-  image_url: z.string(),
-  product_id: z.string(),
-  store_id: z.string(),
-});
-
-export class CreateAdControllerBodyDTO extends createZodDto(
-  CreateAdControllerBodySchema,
-) {}
+export class CreateAdControllerBodyDTO extends OmitType(Ad, [
+  'id',
+  'created_at',
+  'updated_at',
+]) {}
 
 const tags = ['Anúncios'];
 
@@ -52,6 +46,7 @@ export class AdController {
   ) {}
 
   @ApiOperation({ summary: 'Listagem de Anúncios', tags })
+  @ApiResponse({ type: ListAdControllerResponseDTO })
   @Get('/v1/ads')
   async find(): Promise<ListAdControllerResponseDTO> {
     const { ads } = await this.adService.find({
@@ -61,12 +56,14 @@ export class AdController {
   }
 
   @ApiOperation({ summary: 'Detalhes do Anúncio por ID', tags })
+  @ApiResponse({ type: GetAdControllerResponseDTO })
   @Get('/v1/ads/:id')
   get(@ReqAd() ad: Ad): GetAdControllerResponseDTO {
     return { ad };
   }
 
   @ApiOperation({ summary: 'Criar Anúncio', tags })
+  @ApiResponse({ type: GetAdControllerResponseDTO })
   @Post('/v1/ads')
   async create(
     @Body() body: CreateAdControllerBodyDTO,

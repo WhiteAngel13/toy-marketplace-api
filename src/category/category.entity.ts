@@ -1,12 +1,38 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
+import { randomUUID } from 'crypto';
 
-export const CategorySchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  image_url: z.string(),
-  store_id: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
+export class Category {
+  @IsString()
+  @ApiProperty({ description: 'ID da categoria', example: randomUUID() })
+  id!: string;
 
-export type Category = z.infer<typeof CategorySchema>;
+  @IsString()
+  @ApiProperty({ description: 'Nome da categoria', example: 'Eletrônicos' })
+  name!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'URL da imagem da categoria',
+    example: 'https://picsum.photos/200/300',
+  })
+  image_url!: string;
+
+  @IsString()
+  @ApiProperty({ description: 'ID da loja', example: randomUUID() })
+  store_id!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de criação da categoria',
+    example: new Date().toISOString(),
+  })
+  created_at!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de atualização da categoria',
+    example: new Date().toISOString(),
+  })
+  updated_at!: string;
+}

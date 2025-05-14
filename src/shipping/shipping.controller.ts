@@ -6,41 +6,33 @@ import {
   Post,
 } from '@nestjs/common';
 import { ShippingService } from './shipping.service';
-import { createZodDto } from 'nestjs-zod';
-import { Shipping, ShippingSchema } from './shipping.entity';
-import { z } from 'zod';
+import { Shipping } from './shipping.entity';
 import { ReqShipping } from './shipping.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const ListShippingControllerResponseSchema = z.object({
-  shippings: z.array(ShippingSchema),
-});
-export class ListShippingControllerResponseDTO extends createZodDto(
-  ListShippingControllerResponseSchema,
-) {}
+export class ListShippingControllerResponseDTO {
+  @ApiProperty({ type: [Shipping] })
+  shippings!: Shipping[];
+}
 
-export const GetShippingControllerResponseSchema = z.object({
-  shipping: ShippingSchema,
-});
+export class GetShippingControllerResponseDTO {
+  @ApiProperty({ type: Shipping })
+  shipping!: Shipping;
+}
 
-export class GetShippingControllerResponseDTO extends createZodDto(
-  GetShippingControllerResponseSchema,
-) {}
-
-export const CreateShippingControllerBodySchema = z.object({
-  title: z.string(),
-  image_url: z.string(),
-  price: z.number(),
-  delivery_time: z.number(),
-  store_id: z.string(),
-});
-
-export class CreateShippingControllerBodyDTO extends createZodDto(
-  CreateShippingControllerBodySchema,
-) {}
+export class CreateShippingControllerBodyDTO extends OmitType(Shipping, [
+  'id',
+  'created_at',
+  'updated_at',
+] as const) {}
 
 const tags = ['Fretes'];
 
@@ -53,6 +45,7 @@ export class ShippingController {
 
   @Get('/v1/shippings')
   @ApiOperation({ summary: 'Listagem de Fretes', tags })
+  @ApiResponse({ type: ListShippingControllerResponseDTO })
   async find(): Promise<ListShippingControllerResponseDTO> {
     const { shippings } = await this.shippingService.find({
       where: {},
@@ -62,12 +55,14 @@ export class ShippingController {
 
   @Get('/v1/shippings/:id')
   @ApiOperation({ summary: 'Detalhes de Frete por ID', tags })
+  @ApiResponse({ type: GetShippingControllerResponseDTO })
   get(@ReqShipping() shipping: Shipping): GetShippingControllerResponseDTO {
     return { shipping };
   }
 
   @Post('/v1/shippings')
   @ApiOperation({ summary: 'Criação de Frete', tags })
+  @ApiResponse({ type: GetShippingControllerResponseDTO })
   async create(
     @Body() body: CreateShippingControllerBodyDTO,
     @LoggedUser() user: User,

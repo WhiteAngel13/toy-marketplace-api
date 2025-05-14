@@ -35,8 +35,7 @@ export type FindShippingServiceResponseDTO = {
 
 export type CreateShippingServiceParamsDTO = {
   data: {
-    title: string;
-    image_url: string;
+    name: string;
     price: number;
     delivery_time: number;
   };
@@ -119,7 +118,7 @@ export class ShippingService {
       id,
       store_id: store.id,
       delivery_time: data.delivery_time,
-      name: data.title,
+      name: data.name,
       price: data.price,
       created_at: now,
       updated_at: now,

@@ -6,43 +6,34 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { createZodDto } from 'nestjs-zod';
-import { Product, ProductSchema } from './product.entity';
-import { z } from 'zod';
+import { Product } from './product.entity';
 import { ReqProduct } from './product.config';
 import { CategoryService } from 'src/category/category.service';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  OmitType,
+} from '@nestjs/swagger';
 
-export const ListProductControllerResponseSchema = z.object({
-  products: z.array(ProductSchema),
-});
+export class ListProductControllerResponseDTO {
+  @ApiProperty({ type: [Product] })
+  products!: Product[];
+}
 
-export class ListProductControllerResponseDTO extends createZodDto(
-  ListProductControllerResponseSchema,
-) {}
+export class GetProductControllerResponseDTO {
+  @ApiProperty({ type: Product })
+  product!: Product;
+}
 
-export const GetProductControllerResponseSchema = z.object({
-  product: ProductSchema,
-});
-
-export class GetProductControllerResponseDTO extends createZodDto(
-  GetProductControllerResponseSchema,
-) {}
-
-export const CreateProductControllerBodySchema = z.object({
-  title: z.string(),
-  image_url: z.string(),
-  price: z.number(),
-  category_id: z.string(),
-  store_id: z.string(),
-});
-
-export class CreateProductControllerBodyDTO extends createZodDto(
-  CreateProductControllerBodySchema,
-) {}
+export class CreateProductControllerBodyDTO extends OmitType(Product, [
+  'id',
+  'created_at',
+  'updated_at',
+] as const) {}
 
 const tags = ['Produtos'];
 
@@ -56,6 +47,7 @@ export class ProductController {
 
   @Get('/v1/products')
   @ApiOperation({ summary: 'Listagem de Produtos', tags })
+  @ApiResponse({ type: ListProductControllerResponseDTO })
   async find(): Promise<ListProductControllerResponseDTO> {
     const { products } = await this.productService.find({
       where: {},
@@ -64,12 +56,14 @@ export class ProductController {
   }
 
   @Get('/v1/products/:id')
+  @ApiResponse({ type: GetProductControllerResponseDTO })
   @ApiOperation({ summary: 'Detalhes de um Produto por ID', tags })
   get(@ReqProduct() product: Product): GetProductControllerResponseDTO {
     return { product };
   }
 
   @Post('/v1/products')
+  @ApiResponse({ type: GetProductControllerResponseDTO })
   @ApiOperation({ summary: 'Criação de Produto', tags })
   async create(
     @Body() body: CreateProductControllerBodyDTO,

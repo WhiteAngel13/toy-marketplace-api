@@ -1,11 +1,37 @@
-import { z } from 'zod';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
+import { randomUUID } from 'crypto';
 
-export const PaymentMethodSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  store_id: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
+export class PaymentMethod {
+  @IsString()
+  @ApiProperty({
+    description: 'ID do método de pagamento',
+    example: randomUUID(),
+  })
+  id!: string;
 
-export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
+  @IsString()
+  @ApiProperty({
+    description: 'Nome do método de pagamento',
+    example: 'Cartão de Crédito',
+  })
+  name!: string;
+
+  @IsString()
+  @ApiProperty({ description: 'ID da loja', example: randomUUID() })
+  store_id!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de criação',
+    example: new Date().toISOString(),
+  })
+  created_at!: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Data de atualização',
+    example: new Date().toISOString(),
+  })
+  updated_at!: string;
+}

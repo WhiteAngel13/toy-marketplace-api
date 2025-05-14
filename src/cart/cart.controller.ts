@@ -7,49 +7,55 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { createZodDto } from 'nestjs-zod';
-import { Cart, CartProduct, CartSchema } from './cart.entity';
-import { z } from 'zod';
+import { Cart, CartProduct } from './cart.entity';
 import { ReqCart, ReqCartProduct } from './cart.config';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 import { CartService } from './cart.service';
 import { StoreService } from 'src/store/store.service';
 import { ProductService } from 'src/product/product.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
+import { randomUUID } from 'crypto';
 
-export const GetMeCartControllerQuerySchema = z.object({
-  store_id: z.string(),
-});
+export class GetMeCartControllerQueryDTO {
+  @IsString()
+  @ApiProperty({
+    description: 'ID da loja',
+    example: randomUUID(),
+  })
+  store_id!: string;
+}
 
-export class GetMeCartControllerQueryDTO extends createZodDto(
-  GetMeCartControllerQuerySchema,
-) {}
+export class GetCartControllerResponseDTO {
+  @ApiProperty({ type: Cart })
+  cart!: Cart;
+}
 
-export const GetCartControllerResponseSchema = z.object({
-  cart: CartSchema,
-});
+export class AddProductCartControllerBodyDTO {
+  @IsString()
+  @ApiProperty({
+    description: 'ID do produto',
+    example: randomUUID(),
+  })
+  product_id!: string;
 
-export class GetCartControllerResponseDTO extends createZodDto(
-  GetCartControllerResponseSchema,
-) {}
+  @ApiProperty({
+    description: 'Quantidade do produto',
+    example: 1,
+  })
+  @IsNumber()
+  quantity!: number;
+}
 
-export const AddProductCartControllerBodySchema = z.object({
-  product_id: z.string(),
-  quantity: z.number(),
-});
-
-export class AddProductCartControllerBodyDTO extends createZodDto(
-  AddProductCartControllerBodySchema,
-) {}
-
-export const UpdateProductCartControllerBodySchema = z.object({
-  quantity: z.number(),
-});
-
-export class UpdateProductCartControllerBodyDTO extends createZodDto(
-  UpdateProductCartControllerBodySchema,
-) {}
+export class UpdateProductCartControllerBodyDTO {
+  @IsNumber()
+  @ApiProperty({
+    description: 'Quantidade do produto',
+    example: 1,
+  })
+  quantity!: number;
+}
 
 const tags = ['Carrinho'];
 
@@ -63,6 +69,7 @@ export class CartController {
 
   @Get('/v1/carts/me')
   @ApiOperation({ summary: 'Carrinho do Usuário', tags })
+  @ApiResponse({ type: GetCartControllerResponseDTO })
   async getMe(
     @LoggedUser() user: User,
     @Query() query: GetMeCartControllerQueryDTO,
@@ -82,12 +89,14 @@ export class CartController {
 
   @Get('/v1/carts/:id')
   @ApiOperation({ summary: 'Detalhes do Carrinho por ID', tags })
+  @ApiResponse({ type: GetCartControllerResponseDTO })
   get(@ReqCart() cart: Cart): GetCartControllerResponseDTO {
     return { cart };
   }
 
   @Post('/v1/carts/:id/products')
   @ApiOperation({ summary: 'Adicionar Produto ao Carrinho', tags })
+  @ApiResponse({ type: GetCartControllerResponseDTO })
   async addProduct(
     @ReqCart() cart: Cart,
     @Body() body: AddProductCartControllerBodyDTO,
@@ -113,6 +122,7 @@ export class CartController {
 
   @Put('/v1/carts/:id/products/:cart_product_id')
   @ApiOperation({ summary: 'Atualizar Produto do Carrinho', tags })
+  @ApiResponse({ type: GetCartControllerResponseDTO })
   async updateProduct(
     @ReqCart() cart: Cart,
     @ReqCartProduct() cartProduct: CartProduct,
@@ -134,6 +144,7 @@ export class CartController {
 
   @Delete('/v1/carts/:id/products/:cart_product_id')
   @ApiOperation({ summary: 'Remover Produto do Carrinho', tags })
+  @ApiResponse({ type: GetCartControllerResponseDTO })
   async deleteProduct(
     @ReqCart() cart: Cart,
     @ReqCartProduct() cartProduct: CartProduct,
