@@ -24,6 +24,7 @@ export class GetStoreControllerResponseDTO {
 export class CreateStoreControllerBodyDTO extends OmitType(Store, [
   'id',
   'created_at',
+  'owner_user_id',
   'updated_at',
 ] as const) {}
 
