@@ -19,7 +19,6 @@ export class User {
   email!: string;
 
   @IsString()
-  @Exclude()
   password_hash!: string;
 
   @IsString()

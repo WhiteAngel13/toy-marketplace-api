@@ -7,8 +7,12 @@ import {
   ApiResponse,
   OmitType,
 } from '@nestjs/swagger';
+import { Exclude, plainToInstance } from 'class-transformer';
 
-class RestUser extends OmitType(User, ['password_hash'] as const) {}
+class RestUser extends OmitType(User, ['password_hash'] as const) {
+  @Exclude()
+  password_hash!: string;
+}
 
 export class GetMeUserControllerResponseDTO {
   @ApiProperty({ type: RestUser })
@@ -23,6 +27,7 @@ export class UserController {
   @ApiOperation({ summary: 'Detalhes do Usuário Logado', tags })
   @ApiResponse({ type: GetMeUserControllerResponseDTO })
   getMe(@LoggedUser() user: User): GetMeUserControllerResponseDTO {
-    return { user };
+    const restUser = plainToInstance(RestUser, user);
+    return { user: restUser };
   }
 }
