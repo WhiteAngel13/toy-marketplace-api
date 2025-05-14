@@ -38,7 +38,7 @@ export type FindPaymentMethodServiceResponseDTO = {
 };
 
 export type CreatePaymentMethodServiceParamsDTO = {
-  data: { title: string; image_url: string; price: number };
+  data: { name: string };
   store: Store;
 };
 
@@ -120,7 +120,7 @@ export class PaymentMethodService {
 
     const paymentMethod: PaymentMethod = {
       id,
-      name: data.title,
+      name: data.name,
       store_id: store.id,
       created_at: now,
       updated_at: now,

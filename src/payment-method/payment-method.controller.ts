@@ -32,10 +32,7 @@ export class GetPaymentMethodControllerResponseDTO extends createZodDto(
 ) {}
 
 export const CreatePaymentMethodControllerBodySchema = z.object({
-  title: z.string(),
-  image_url: z.string(),
-  price: z.number(),
-  category_id: z.string(),
+  name: z.string(),
   store_id: z.string(),
 });
 
