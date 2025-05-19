@@ -1,4 +1,10 @@
-import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
+import {
+  mediumint,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 import {
   drizzleCoupon,
@@ -10,20 +16,24 @@ import { drizzleProduct } from './product.drizzle.schema';
 import { CartStatus } from 'src/cart/cart.entity';
 
 export const drizzleCart = mysqlTable('carts', {
-  id: text('id').primaryKey(),
-  user_id: text('user_id')
+  id: varchar('id', { length: 191 }).primaryKey(),
+  user_id: varchar('user_id', { length: 191 })
     .notNull()
     .references(() => drizzleUser.id),
-  store_id: text('store_id')
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id),
   delivery_address: text('delivery_address'),
-  status: text('status').notNull().$type<CartStatus>(),
-  payment_method_id: text('payment_method_id').references(
+  status: varchar('status', { length: 191 }).notNull().$type<CartStatus>(),
+  payment_method_id: varchar('payment_method_id', { length: 191 }).references(
     () => drizzlePaymentMethod.id,
   ),
-  shipping_id: text('shipping_id').references(() => drizzleShipping.id),
-  coupon_id: text('coupon_id').references(() => drizzleCoupon.id),
+  shipping_id: varchar('shipping_id', { length: 191 }).references(
+    () => drizzleShipping.id,
+  ),
+  coupon_id: varchar('coupon_id', { length: 191 }).references(
+    () => drizzleCoupon.id,
+  ),
   created_at: timestamp({ mode: 'date' }).notNull(),
   updated_at: timestamp({ mode: 'date' }).notNull(),
 });
@@ -42,11 +52,11 @@ export const drizzleCartColumns = {
 };
 
 export const drizzleCartProduct = mysqlTable('cart_products', {
-  id: text('id').primaryKey(),
-  cart_id: text('cart_id')
+  id: varchar('id', { length: 191 }).primaryKey(),
+  cart_id: varchar('cart_id', { length: 191 })
     .notNull()
     .references(() => drizzleCart.id),
-  product_id: text('product_id')
+  product_id: varchar('product_id', { length: 191 })
     .notNull()
     .references(() => drizzleProduct.id),
   quantity: mediumint('quantity').notNull(),

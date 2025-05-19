@@ -1,7 +1,7 @@
-import { text, timestamp, mysqlTable } from 'drizzle-orm/mysql-core';
+import { text, timestamp, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
 
 export const drizzleUser = mysqlTable('users', {
-  id: text().primaryKey(),
+  id: varchar('id', { length: 191 }).primaryKey(),
   email: text().notNull(),
   password_hash: text().notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),

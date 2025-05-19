@@ -4,12 +4,13 @@ import {
   mysqlTable,
   text,
   timestamp,
+  varchar,
 } from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 
 export const drizzleNotification = mysqlTable('notifications', {
-  id: text('id').primaryKey(),
-  user_id: text('user_id')
+  id: varchar('id', { length: 191 }).primaryKey(),
+  user_id: varchar('user_id', { length: 191 })
     .notNull()
     .references(() => drizzleUser.id),
   title: text('title').notNull(),

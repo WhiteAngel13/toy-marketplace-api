@@ -1,11 +1,17 @@
-import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
+import {
+  mediumint,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 import { drizzleProduct } from './product.drizzle.schema';
 
 export const drizzleStore = mysqlTable('stores', {
-  id: text().primaryKey(),
+  id: varchar('id', { length: 191 }).primaryKey(),
   name: text().notNull(),
-  owner_user_id: text()
+  owner_user_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleUser.id),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -21,12 +27,12 @@ export const drizzleStoreColumns = {
 };
 
 export const drizzleAd = mysqlTable('ads', {
-  id: text().primaryKey(),
+  id: varchar('id', { length: 191 }).primaryKey(),
   image_url: text().notNull(),
-  store_id: text()
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
-  product_id: text()
+  product_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleProduct.id, { onDelete: 'cascade' }),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -43,8 +49,8 @@ export const drizzleAdColumns = {
 };
 
 export const drizzleShipping = mysqlTable('shippings', {
-  id: text().primaryKey(),
-  store_id: text()
+  id: varchar('id', { length: 191 }).primaryKey(),
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   name: text().notNull(),
@@ -65,8 +71,8 @@ export const drizzleShippingColumns = {
 };
 
 export const drizzlePaymentMethod = mysqlTable('payment_methods', {
-  id: text().primaryKey(),
-  store_id: text()
+  id: varchar('id', { length: 191 }).primaryKey(),
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   name: text().notNull(),
@@ -83,8 +89,8 @@ export const drizzlePaymentMethodColumns = {
 };
 
 export const drizzleCoupon = mysqlTable('coupons', {
-  id: text().primaryKey(),
-  store_id: text()
+  id: varchar('id', { length: 191 }).primaryKey(),
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   code: text().notNull(),

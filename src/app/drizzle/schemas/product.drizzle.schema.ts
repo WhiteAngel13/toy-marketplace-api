@@ -1,11 +1,17 @@
-import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
+import {
+  mediumint,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/mysql-core';
 import { drizzleStore } from './store.drizzle.schema';
 
 export const drizzleCategory = mysqlTable('categories', {
-  id: text().primaryKey(),
+  id: varchar('id', { length: 191 }).primaryKey(),
   name: text().notNull(),
   image_url: text().notNull(),
-  store_id: text()
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -22,12 +28,12 @@ export const drizzleCategoryColumns = {
 };
 
 export const drizzleProduct = mysqlTable('products', {
-  id: text().primaryKey(),
+  id: varchar('id', { length: 191 }).primaryKey(),
   title: text().notNull(),
-  category_id: text()
+  category_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleCategory.id),
-  store_id: text()
+  store_id: varchar('id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id),
   price: mediumint().notNull(),
