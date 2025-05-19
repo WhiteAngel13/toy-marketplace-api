@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
 
 @Injectable()
 export class DrizzleService implements OnModuleInit, OnModuleDestroy {
@@ -14,13 +14,16 @@ export class DrizzleService implements OnModuleInit, OnModuleDestroy {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString)
       throw new Error('DATABASE_URL is not set in environment variables');
-    const pool = new Pool({ connectionString });
-    this.internalDb = drizzle({ client: pool });
+    const connection = await mysql.createConnection({
+      uri: connectionString,
+    });
+
+    this.internalDb = drizzle({ client: connection });
     await this.internalDb.execute('select 1');
   }
 
   async onModuleDestroy() {
-    const client = this.internalDb.$client as Pool;
+    const client = this.internalDb.$client;
     await client.end();
   }
 }
