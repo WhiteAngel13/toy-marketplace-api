@@ -44,6 +44,19 @@ export type CreateProductServiceResponseDTO = {
   product: Product;
 };
 
+export type UpdateProductServiceParamsDTO = {
+  data: { title?: string; image_url?: string; price?: number };
+  product: Product;
+};
+
+export type UpdateProductServiceResponseDTO = {
+  product: Product;
+};
+
+export type DeleteProductServiceParamsDTO = {
+  product: Product;
+};
+
 @Injectable()
 export class ProductService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -135,5 +148,42 @@ export class ProductService {
     });
 
     return { product };
+  }
+
+  async update(
+    params: UpdateProductServiceParamsDTO,
+  ): Promise<UpdateProductServiceResponseDTO> {
+    const { data, product } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedProduct: Product = {
+      ...product,
+      ...data,
+      updated_at: now,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleProduct)
+      .set({
+        ...updatedProduct,
+        created_at: new Date(updatedProduct.created_at),
+        updated_at: new Date(updatedProduct.updated_at),
+      })
+      .where(eq(drizzleProductColumns.id, product.id));
+
+    return { product: updatedProduct };
+  }
+
+  async delete(
+    params: DeleteProductServiceParamsDTO,
+  ): Promise<DeleteProductServiceParamsDTO> {
+    const { product } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleProduct)
+      .where(eq(drizzleProductColumns.id, product.id));
+
+    return params;
   }
 }

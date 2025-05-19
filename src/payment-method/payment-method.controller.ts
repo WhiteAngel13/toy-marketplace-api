@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Post,
+  Put,
 } from '@nestjs/common';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
@@ -16,6 +18,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListPaymentMethodControllerResponseDTO {
@@ -31,6 +34,10 @@ export class GetPaymentMethodControllerResponseDTO {
 export class CreatePaymentMethodControllerBodyDTO extends OmitType(
   PaymentMethod,
   ['id', 'created_at', 'updated_at'],
+) {}
+
+export class UpdatePaymentMethodControllerBodyDTO extends PartialType(
+  OmitType(PaymentMethod, ['id', 'created_at', 'updated_at']),
 ) {}
 
 const tags = ['Métodos de Pagamento'];
@@ -80,5 +87,29 @@ export class PaymentMethodController {
     });
 
     return { payment_method: paymentMethod };
+  }
+
+  @Put('/v1/payment_methods/:id')
+  @ApiOperation({ summary: 'Atualizar um Método de Pagamento', tags })
+  @ApiResponse({ type: GetPaymentMethodControllerResponseDTO })
+  async update(
+    @Body() body: UpdatePaymentMethodControllerBodyDTO,
+    @ReqPaymentMethod() paymentMethod: PaymentMethod,
+  ): Promise<GetPaymentMethodControllerResponseDTO> {
+    const { paymentMethod: updatedPaymentMethod } =
+      await this.paymentMethodService.update({
+        data: body,
+        paymentMethod,
+      });
+
+    return { payment_method: updatedPaymentMethod };
+  }
+
+  @Delete('/v1/payment_methods/:id')
+  @ApiOperation({ summary: 'Deletar um Método de Pagamento', tags })
+  async delete(
+    @ReqPaymentMethod() paymentMethod: PaymentMethod,
+  ): Promise<void> {
+    await this.paymentMethodService.delete({ paymentMethod });
   }
 }

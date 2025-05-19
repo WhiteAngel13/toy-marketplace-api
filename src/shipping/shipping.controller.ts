@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ShippingService } from './shipping.service';
 import { Shipping } from './shipping.entity';
@@ -16,6 +18,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListShippingControllerResponseDTO {
@@ -33,6 +36,10 @@ export class CreateShippingControllerBodyDTO extends OmitType(Shipping, [
   'created_at',
   'updated_at',
 ] as const) {}
+
+export class UpdateShippingControllerBodyDTO extends PartialType(
+  OmitType(Shipping, ['id', 'created_at', 'updated_at'] as const),
+) {}
 
 const tags = ['Fretes'];
 
@@ -80,5 +87,26 @@ export class ShippingController {
     });
 
     return { shipping };
+  }
+
+  @Put('/v1/shippings/:id')
+  @ApiOperation({ summary: 'Atualização de Frete', tags })
+  @ApiResponse({ type: GetShippingControllerResponseDTO })
+  async update(
+    @ReqShipping() shipping: Shipping,
+    @Body() body: UpdateShippingControllerBodyDTO,
+  ): Promise<GetShippingControllerResponseDTO> {
+    const { shipping: updatedShipping } = await this.shippingService.update({
+      shipping,
+      data: body,
+    });
+
+    return { shipping: updatedShipping };
+  }
+
+  @Delete('/v1/shippings/:id')
+  @ApiOperation({ summary: 'Remoção de Frete', tags })
+  async delete(@ReqShipping() shipping: Shipping): Promise<void> {
+    await this.shippingService.delete({ shipping });
   }
 }

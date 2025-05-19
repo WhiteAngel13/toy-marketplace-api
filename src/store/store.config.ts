@@ -4,22 +4,12 @@ import {
   ExecutionContext,
   createParamDecorator,
   NestMiddleware,
-  SetMetadata,
-  applyDecorators,
-  ForbiddenException,
 } from '@nestjs/common';
 import { NextFunction, Request } from 'express';
 import { Store } from './store.entity';
 import { Observable } from 'rxjs';
 import { StoreService } from './store.service';
 import { User } from 'src/user/user.entity';
-import { Reflector } from '@nestjs/core';
-
-export const SHOULD_BE_STORE_OWNER_WATERMARK = 'has:construction:permissions';
-
-export const ShouldBeStoreOwner = () => {
-  return applyDecorators(SetMetadata(SHOULD_BE_STORE_OWNER_WATERMARK, true));
-};
 
 export const ReqStore = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): Store | undefined => {
@@ -34,6 +24,8 @@ export class StoreMiddleware implements NestMiddleware {
   async use(req: Request, _: Response, next: NextFunction) {
     const id = req.params.id;
     if (!id) return next();
+    const user = req['user'] as User;
+    if (!user) return next();
 
     const { store } = await this.storeService.get({
       where: { id },
@@ -41,30 +33,28 @@ export class StoreMiddleware implements NestMiddleware {
     });
 
     req['store'] = store;
+    req['is_store_owner'] = store.owner_user_id === user.id;
+
     next();
   }
 }
 
 @Injectable()
 export class StoreGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  private needsValidationMethods = ['PUT', 'DELETE'];
 
   canActivate(
-    context: ExecutionContext,
+    ctx: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const store = request['store'] as Store | undefined;
-    const user = request['user'] as User | undefined;
-    if (!store || !user) return true;
+    const request = ctx.switchToHttp().getRequest<Request>();
 
-    const shouldBeStoreOwner = this.reflector.get<boolean>(
-      SHOULD_BE_STORE_OWNER_WATERMARK,
-      context.getHandler(),
-    );
+    const user = request['user'] as User;
+    if (!user) return false;
 
-    if (!shouldBeStoreOwner) return true;
-    if (store.owner_user_id === user.id) return true;
+    if (!this.needsValidationMethods.includes(request.method)) {
+      return true;
+    }
 
-    throw new ForbiddenException();
+    return request['is_store_owner'] as boolean;
   }
 }

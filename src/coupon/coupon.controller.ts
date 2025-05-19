@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { Coupon } from './coupon.entity';
@@ -16,6 +18,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListCouponControllerResponseDTO {
@@ -33,6 +36,10 @@ export class CreateCouponControllerBodyDTO extends OmitType(Coupon, [
   'created_at',
   'updated_at',
 ]) {}
+
+export class UpdateCouponControllerBodyDTO extends PartialType(
+  OmitType(Coupon, ['id', 'created_at', 'updated_at']),
+) {}
 
 const tags = ['Cupons'];
 
@@ -80,5 +87,26 @@ export class CouponController {
     });
 
     return { coupon };
+  }
+
+  @Put('/v1/coupons/:id')
+  @ApiOperation({ summary: 'Atualizar Cupom', tags })
+  @ApiResponse({ type: GetCouponControllerResponseDTO })
+  async update(
+    @Body() body: UpdateCouponControllerBodyDTO,
+    @ReqCoupon() coupon: Coupon,
+  ): Promise<GetCouponControllerResponseDTO> {
+    const { coupon: updatedCoupon } = await this.couponService.update({
+      data: body,
+      coupon,
+    });
+
+    return { coupon: updatedCoupon };
+  }
+
+  @Delete('/v1/coupons/:id')
+  @ApiOperation({ summary: 'Deletar Cupom', tags })
+  async delete(@ReqCoupon() coupon: Coupon): Promise<void> {
+    await this.couponService.delete({ coupon });
   }
 }

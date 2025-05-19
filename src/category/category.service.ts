@@ -154,14 +154,15 @@ export class CategoryService {
     const updatedCategory: Category = {
       ...category,
       ...data,
+      updated_at: now,
     };
 
     await this.drizzleService.db
       .update(drizzleCategory)
       .set({
         ...updatedCategory,
-        created_at: new Date(category.created_at),
-        updated_at: new Date(now),
+        created_at: new Date(updatedCategory.created_at),
+        updated_at: new Date(updatedCategory.updated_at),
       })
       .where(eq(drizzleCategoryColumns.id, category.id));
 

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
@@ -17,6 +19,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListProductControllerResponseDTO {
@@ -34,6 +37,10 @@ export class CreateProductControllerBodyDTO extends OmitType(Product, [
   'created_at',
   'updated_at',
 ] as const) {}
+
+export class UpdateProductControllerBodyDTO extends PartialType(
+  OmitType(Product, ['id', 'created_at', 'updated_at'] as const),
+) {}
 
 const tags = ['Produtos'];
 
@@ -88,5 +95,26 @@ export class ProductController {
     });
 
     return { product };
+  }
+
+  @Put('/v1/products/:id')
+  @ApiResponse({ type: GetProductControllerResponseDTO })
+  @ApiOperation({ summary: 'Atualização de Produto', tags })
+  async update(
+    @Body() body: UpdateProductControllerBodyDTO,
+    @ReqProduct() product: Product,
+  ): Promise<GetProductControllerResponseDTO> {
+    const { product: updatedProduct } = await this.productService.update({
+      data: body,
+      product,
+    });
+
+    return { product: updatedProduct };
+  }
+
+  @Delete('/v1/products/:id')
+  @ApiOperation({ summary: 'Deletar Produto', tags })
+  async delete(@ReqProduct() product: Product): Promise<void> {
+    await this.productService.delete({ product });
   }
 }

@@ -46,6 +46,23 @@ export type CreateShippingServiceResponseDTO = {
   shipping: Shipping;
 };
 
+export type UpdateShippingServiceParamsDTO = {
+  data: {
+    name?: string;
+    price?: number;
+    delivery_time?: number;
+  };
+  shipping: Shipping;
+};
+
+export type UpdateShippingServiceResponseDTO = {
+  shipping: Shipping;
+};
+
+export type DeleteShippingServiceParamsDTO = {
+  shipping: Shipping;
+};
+
 @Injectable()
 export class ShippingService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -131,5 +148,38 @@ export class ShippingService {
     });
 
     return { shipping };
+  }
+
+  async update(
+    params: UpdateShippingServiceParamsDTO,
+  ): Promise<UpdateShippingServiceResponseDTO> {
+    const { data, shipping } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedShipping: Shipping = {
+      ...shipping,
+      ...data,
+      updated_at: now,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleShipping)
+      .set({
+        ...updatedShipping,
+        created_at: new Date(updatedShipping.created_at),
+        updated_at: new Date(updatedShipping.updated_at),
+      })
+      .where(eq(drizzleShippingColumns.id, shipping.id));
+
+    return { shipping: updatedShipping };
+  }
+
+  async delete(params: DeleteShippingServiceParamsDTO): Promise<void> {
+    const { shipping } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleShipping)
+      .where(eq(drizzleShippingColumns.id, shipping.id));
   }
 }

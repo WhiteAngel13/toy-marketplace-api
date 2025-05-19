@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { User } from 'src/user/user.entity';
 import { Store } from './store.entity';
@@ -9,6 +9,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListStoreControllerResponseDTO {
@@ -27,6 +28,10 @@ export class CreateStoreControllerBodyDTO extends OmitType(Store, [
   'owner_user_id',
   'updated_at',
 ] as const) {}
+
+export class UpdateStoreControllerBodyDTO extends PartialType(
+  OmitType(Store, ['id', 'created_at', 'owner_user_id', 'updated_at'] as const),
+) {}
 
 const tags = ['Lojas'];
 @Controller()
@@ -59,5 +64,25 @@ export class StoreController {
   ): Promise<GetStoreControllerResponseDTO> {
     const { store } = await this.storeService.create({ data: body, user });
     return { store };
+  }
+
+  @Put('/v1/stores/:id')
+  @ApiOperation({ summary: 'Atualização de Lojas', tags })
+  @ApiResponse({ type: GetStoreControllerResponseDTO })
+  async update(
+    @Body() body: UpdateStoreControllerBodyDTO,
+    @ReqStore() store: Store,
+  ): Promise<GetStoreControllerResponseDTO> {
+    const { store: updatedStore } = await this.storeService.update({
+      data: body,
+      store,
+    });
+    return { store: updatedStore };
+  }
+
+  @Delete('/v1/stores/:id')
+  @ApiOperation({ summary: 'Deleção de Lojas', tags })
+  async delete(@ReqStore() store: Store): Promise<void> {
+    await this.storeService.delete({ store });
   }
 }

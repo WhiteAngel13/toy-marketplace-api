@@ -40,6 +40,19 @@ export type CreateCouponServiceResponseDTO = {
   coupon: Coupon;
 };
 
+export type UpdateCouponServiceParamsDTO = {
+  data: { code?: string; discount?: number };
+  coupon: Coupon;
+};
+
+export type UpdateCouponServiceResponseDTO = {
+  coupon: Coupon;
+};
+
+export type DeleteCouponServiceParamsDTO = {
+  coupon: Coupon;
+};
+
 @Injectable()
 export class CouponService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -121,6 +134,43 @@ export class CouponService {
       created_at: new Date(coupon.created_at),
       updated_at: new Date(coupon.updated_at),
     });
+
+    return { coupon };
+  }
+
+  async update(
+    params: UpdateCouponServiceParamsDTO,
+  ): Promise<UpdateCouponServiceResponseDTO> {
+    const { data, coupon } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedCoupon: Coupon = {
+      ...coupon,
+      ...data,
+      updated_at: now,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleCoupon)
+      .set({
+        ...updatedCoupon,
+        created_at: new Date(updatedCoupon.created_at),
+        updated_at: new Date(updatedCoupon.updated_at),
+      })
+      .where(eq(drizzleCouponColumns.id, coupon.id));
+
+    return { coupon: updatedCoupon };
+  }
+
+  async delete(
+    params: DeleteCouponServiceParamsDTO,
+  ): Promise<DeleteCouponServiceParamsDTO> {
+    const { coupon } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleCoupon)
+      .where(eq(drizzleCouponColumns.id, coupon.id));
 
     return { coupon };
   }

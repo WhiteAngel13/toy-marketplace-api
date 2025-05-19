@@ -46,6 +46,19 @@ export type CreatePaymentMethodServiceResponseDTO = {
   paymentMethod: PaymentMethod;
 };
 
+export type UpdatePaymentMethodServiceParamsDTO = {
+  data: { name?: string };
+  paymentMethod: PaymentMethod;
+};
+
+export type UpdatePaymentMethodServiceResponseDTO = {
+  paymentMethod: PaymentMethod;
+};
+
+export type DeletePaymentMethodServiceParamsDTO = {
+  paymentMethod: PaymentMethod;
+};
+
 @Injectable()
 export class PaymentMethodService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -133,5 +146,38 @@ export class PaymentMethodService {
     });
 
     return { paymentMethod };
+  }
+
+  async update(
+    params: UpdatePaymentMethodServiceParamsDTO,
+  ): Promise<UpdatePaymentMethodServiceResponseDTO> {
+    const { data, paymentMethod } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedPaymentMethod: PaymentMethod = {
+      ...paymentMethod,
+      ...data,
+      updated_at: now,
+    };
+
+    await this.drizzleService.db
+      .update(drizzlePaymentMethod)
+      .set({
+        ...updatedPaymentMethod,
+        created_at: new Date(updatedPaymentMethod.created_at),
+        updated_at: new Date(updatedPaymentMethod.updated_at),
+      })
+      .where(eq(drizzlePaymentMethodColumns.id, paymentMethod.id));
+
+    return { paymentMethod: updatedPaymentMethod };
+  }
+
+  async delete(params: DeletePaymentMethodServiceParamsDTO): Promise<void> {
+    const { paymentMethod } = params;
+
+    await this.drizzleService.db
+      .delete(drizzlePaymentMethod)
+      .where(eq(drizzlePaymentMethodColumns.id, paymentMethod.id));
   }
 }

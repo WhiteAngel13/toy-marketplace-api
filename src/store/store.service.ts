@@ -40,13 +40,17 @@ export type CreateStoreServiceResponseDTO = {
   store: Store;
 };
 
-export type IsUserStoreOwnerServiceParamsDTO = {
+export type UpdateStoreServiceParamsDTO = {
+  data: { name?: string };
   store: Store;
-  user: User;
 };
 
-export type IsUserStoreOwnerServiceResponseDTO = {
-  isOwner: boolean;
+export type UpdateStoreServiceResponseDTO = {
+  store: Store;
+};
+
+export type DeleteStoreServiceParamsDTO = {
+  store: Store;
 };
 
 @Injectable()
@@ -130,5 +134,37 @@ export class StoreService {
     });
 
     return { store };
+  }
+
+  async update(
+    params: UpdateStoreServiceParamsDTO,
+  ): Promise<UpdateStoreServiceResponseDTO> {
+    const { data, store } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedStore: Store = {
+      ...store,
+      name: data.name ?? store.name,
+      updated_at: now,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleStore)
+      .set({
+        name: updatedStore.name,
+        updated_at: new Date(updatedStore.updated_at),
+      })
+      .where(eq(drizzleStoreColumns.id, store.id));
+
+    return { store: updatedStore };
+  }
+
+  async delete(params: DeleteStoreServiceParamsDTO): Promise<void> {
+    const { store } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleStore)
+      .where(eq(drizzleStoreColumns.id, store.id));
   }
 }

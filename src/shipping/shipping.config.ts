@@ -9,6 +9,7 @@ import { NextFunction, Request } from 'express';
 import { Shipping } from './shipping.entity';
 import { Observable } from 'rxjs';
 import { ShippingService } from './shipping.service';
+import { User } from 'src/user/user.entity';
 
 export const ReqShipping = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): Shipping | undefined => {
@@ -36,7 +37,20 @@ export class ShippingMiddleware implements NestMiddleware {
 
 @Injectable()
 export class ShippingGuard implements CanActivate {
-  canActivate(): boolean | Promise<boolean> | Observable<boolean> {
-    return true;
+  private needsValidationMethods = ['PUT', 'DELETE'];
+
+  canActivate(
+    ctx: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const request = ctx.switchToHttp().getRequest<Request>();
+
+    const user = request['user'] as User;
+    if (!user) return false;
+
+    if (!this.needsValidationMethods.includes(request.method)) {
+      return true;
+    }
+
+    return request['is_store_owner'] as boolean;
   }
 }

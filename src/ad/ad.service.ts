@@ -149,15 +149,16 @@ export class AdService {
 
     const updatedAd: Ad = {
       ...ad,
-      image_url: data.image_url ?? ad.image_url,
+      ...data,
+      updated_at: now,
     };
 
     await this.drizzleService.db
       .update(drizzleAd)
       .set({
         ...updatedAd,
-        created_at: new Date(ad.created_at),
-        updated_at: new Date(now),
+        created_at: new Date(updatedAd.created_at),
+        updated_at: new Date(updatedAd.updated_at),
       })
       .where(eq(drizzleAdColumns.id, ad.id));
 
