@@ -42,6 +42,19 @@ export type CreateAdServiceResponseDTO = {
   ad: Ad;
 };
 
+export type UpdateAdServiceParamsDTO = {
+  data: { image_url?: string };
+  ad: Ad;
+};
+
+export type UpdateAdServiceResponseDTO = {
+  ad: Ad;
+};
+
+export type DeleteAdServiceParamsDTO = {
+  ad: Ad;
+};
+
 @Injectable()
 export class AdService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -125,5 +138,37 @@ export class AdService {
     });
 
     return { ad };
+  }
+
+  async update(
+    params: UpdateAdServiceParamsDTO,
+  ): Promise<UpdateAdServiceResponseDTO> {
+    const { data, ad } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedAd: Ad = {
+      ...ad,
+      image_url: data.image_url ?? ad.image_url,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleAd)
+      .set({
+        ...updatedAd,
+        created_at: new Date(ad.created_at),
+        updated_at: new Date(now),
+      })
+      .where(eq(drizzleAdColumns.id, ad.id));
+
+    return { ad: updatedAd };
+  }
+
+  async delete(params: DeleteAdServiceParamsDTO): Promise<void> {
+    const { ad } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleAd)
+      .where(eq(drizzleAdColumns.id, ad.id));
   }
 }

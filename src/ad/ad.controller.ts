@@ -17,6 +17,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListAdControllerResponseDTO {
@@ -34,6 +35,10 @@ export class CreateAdControllerBodyDTO extends OmitType(Ad, [
   'created_at',
   'updated_at',
 ]) {}
+
+export class UpdateAdControllerBodyDTO extends PartialType(
+  OmitType(Ad, ['id', 'created_at', 'updated_at']),
+) {}
 
 const tags = ['Anúncios'];
 
@@ -88,5 +93,26 @@ export class AdController {
     });
 
     return { ad };
+  }
+
+  @ApiOperation({ summary: 'Atualizar Anúncio', tags })
+  @ApiResponse({ type: GetAdControllerResponseDTO })
+  @Post('/v1/ads/:id')
+  async update(
+    @ReqAd() ad: Ad,
+    @Body() body: UpdateAdControllerBodyDTO,
+  ): Promise<GetAdControllerResponseDTO> {
+    const { ad: updatedAd } = await this.adService.update({
+      data: body,
+      ad,
+    });
+
+    return { ad: updatedAd };
+  }
+
+  @ApiOperation({ summary: 'Deletar Anúncio', tags })
+  @Post('/v1/ads/:id/delete')
+  async delete(@ReqAd() ad: Ad): Promise<void> {
+    await this.adService.delete({ ad });
   }
 }
