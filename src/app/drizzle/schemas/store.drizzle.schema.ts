@@ -1,8 +1,8 @@
-import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 import { drizzleProduct } from './product.drizzle.schema';
 
-export const drizzleStore = pgTable('stores', {
+export const drizzleStore = mysqlTable('stores', {
   id: text().primaryKey(),
   name: text().notNull(),
   owner_user_id: text()
@@ -20,7 +20,7 @@ export const drizzleStoreColumns = {
   updated_at: drizzleStore.updated_at,
 };
 
-export const drizzleAd = pgTable('ads', {
+export const drizzleAd = mysqlTable('ads', {
   id: text().primaryKey(),
   image_url: text().notNull(),
   store_id: text()
@@ -42,14 +42,14 @@ export const drizzleAdColumns = {
   updated_at: drizzleAd.updated_at,
 };
 
-export const drizzleShipping = pgTable('shippings', {
+export const drizzleShipping = mysqlTable('shippings', {
   id: text().primaryKey(),
   store_id: text()
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   name: text().notNull(),
-  price: integer().notNull(),
-  delivery_time: integer().notNull(),
+  price: mediumint().notNull(),
+  delivery_time: mediumint().notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),
   updated_at: timestamp({ mode: 'date' }).notNull(),
 });
@@ -64,7 +64,7 @@ export const drizzleShippingColumns = {
   updated_at: drizzleShipping.updated_at,
 };
 
-export const drizzlePaymentMethod = pgTable('payment_methods', {
+export const drizzlePaymentMethod = mysqlTable('payment_methods', {
   id: text().primaryKey(),
   store_id: text()
     .notNull()
@@ -82,13 +82,13 @@ export const drizzlePaymentMethodColumns = {
   updated_at: drizzlePaymentMethod.updated_at,
 };
 
-export const drizzleCoupon = pgTable('coupons', {
+export const drizzleCoupon = mysqlTable('coupons', {
   id: text().primaryKey(),
   store_id: text()
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   code: text().notNull(),
-  discount: integer().notNull(),
+  discount: mediumint().notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),
   updated_at: timestamp({ mode: 'date' }).notNull(),
 });

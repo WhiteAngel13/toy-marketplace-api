@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 import {
   drizzleCoupon,
@@ -9,7 +9,7 @@ import {
 import { drizzleProduct } from './product.drizzle.schema';
 import { CartStatus } from 'src/cart/cart.entity';
 
-export const drizzleCart = pgTable('carts', {
+export const drizzleCart = mysqlTable('carts', {
   id: text('id').primaryKey(),
   user_id: text('user_id')
     .notNull()
@@ -41,7 +41,7 @@ export const drizzleCartColumns = {
   updated_at: drizzleCart.updated_at,
 };
 
-export const drizzleCartProduct = pgTable('cart_products', {
+export const drizzleCartProduct = mysqlTable('cart_products', {
   id: text('id').primaryKey(),
   cart_id: text('cart_id')
     .notNull()
@@ -49,7 +49,7 @@ export const drizzleCartProduct = pgTable('cart_products', {
   product_id: text('product_id')
     .notNull()
     .references(() => drizzleProduct.id),
-  quantity: integer('quantity').notNull(),
+  quantity: mediumint('quantity').notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),
   updated_at: timestamp({ mode: 'date' }).notNull(),
 });

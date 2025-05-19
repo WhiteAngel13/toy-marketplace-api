@@ -1,7 +1,7 @@
-import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { mediumint, mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
 import { drizzleStore } from './store.drizzle.schema';
 
-export const drizzleCategory = pgTable('categories', {
+export const drizzleCategory = mysqlTable('categories', {
   id: text().primaryKey(),
   name: text().notNull(),
   image_url: text().notNull(),
@@ -21,7 +21,7 @@ export const drizzleCategoryColumns = {
   updated_at: drizzleCategory.updated_at,
 };
 
-export const drizzleProduct = pgTable('products', {
+export const drizzleProduct = mysqlTable('products', {
   id: text().primaryKey(),
   title: text().notNull(),
   category_id: text()
@@ -30,7 +30,7 @@ export const drizzleProduct = pgTable('products', {
   store_id: text()
     .notNull()
     .references(() => drizzleStore.id),
-  price: integer().notNull(),
+  price: mediumint().notNull(),
   image_url: text().notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),
   updated_at: timestamp({ mode: 'date' }).notNull(),

@@ -1,8 +1,8 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { mysqlTable, text, timestamp } from 'drizzle-orm/mysql-core';
 import { drizzleCart } from './cart.drizzle.schema';
 import { OrderStatus } from 'src/order/order.entity';
 
-export const drizzleOrder = pgTable('orders', {
+export const drizzleOrder = mysqlTable('orders', {
   id: text('id').primaryKey(),
   cart_id: text('cart_id')
     .notNull()

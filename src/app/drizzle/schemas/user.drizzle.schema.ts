@@ -1,6 +1,6 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { text, timestamp, mysqlTable } from 'drizzle-orm/mysql-core';
 
-export const drizzleUser = pgTable('users', {
+export const drizzleUser = mysqlTable('users', {
   id: text().primaryKey(),
   email: text().notNull(),
   password_hash: text().notNull(),

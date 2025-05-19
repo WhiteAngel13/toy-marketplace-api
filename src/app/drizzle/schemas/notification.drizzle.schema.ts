@@ -1,7 +1,13 @@
-import { boolean, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  mediumtext,
+  mysqlTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/mysql-core';
 import { drizzleUser } from './user.drizzle.schema';
 
-export const drizzleNotification = pgTable('notifications', {
+export const drizzleNotification = mysqlTable('notifications', {
   id: text('id').primaryKey(),
   user_id: text('user_id')
     .notNull()
@@ -9,7 +15,7 @@ export const drizzleNotification = pgTable('notifications', {
   title: text('title').notNull(),
   message: text('message').notNull(),
   read: boolean('read').notNull(),
-  metadata: jsonb('metadata').notNull(),
+  metadata: mediumtext('metadata').notNull(),
   created_at: timestamp({ mode: 'date' }).notNull(),
 });
 
