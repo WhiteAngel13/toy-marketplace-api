@@ -42,6 +42,19 @@ export type CreateCategoryServiceResponseDTO = {
   category: Category;
 };
 
+export type UpdateCategoryServiceParamsDTO = {
+  data: { name?: string; image_url?: string };
+  category: Category;
+};
+
+export type UpdateCategoryServiceResponseDTO = {
+  category: Category;
+};
+
+export type DeleteCategoryServiceParamsDTO = {
+  category: Category;
+};
+
 @Injectable()
 export class CategoryService {
   constructor(private readonly drizzleService: DrizzleService) {}
@@ -129,5 +142,37 @@ export class CategoryService {
     });
 
     return { category };
+  }
+
+  async update(
+    params: UpdateCategoryServiceParamsDTO,
+  ): Promise<UpdateCategoryServiceResponseDTO> {
+    const { data, category } = params;
+
+    const now = new Date().toISOString();
+
+    const updatedCategory: Category = {
+      ...category,
+      ...data,
+    };
+
+    await this.drizzleService.db
+      .update(drizzleCategory)
+      .set({
+        ...updatedCategory,
+        created_at: new Date(category.created_at),
+        updated_at: new Date(now),
+      })
+      .where(eq(drizzleCategoryColumns.id, category.id));
+
+    return { category: updatedCategory };
+  }
+
+  async delete(params: DeleteCategoryServiceParamsDTO): Promise<void> {
+    const { category } = params;
+
+    await this.drizzleService.db
+      .delete(drizzleCategory)
+      .where(eq(drizzleCategoryColumns.id, category.id));
   }
 }

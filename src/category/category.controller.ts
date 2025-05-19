@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Get,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { User } from 'src/user/user.entity';
@@ -16,6 +17,7 @@ import {
   ApiProperty,
   ApiResponse,
   OmitType,
+  PartialType,
 } from '@nestjs/swagger';
 
 export class ListCategoryControllerResponseDTO {
@@ -33,6 +35,10 @@ export class CreateCategoryControllerBodyDTO extends OmitType(Category, [
   'created_at',
   'updated_at',
 ]) {}
+
+export class UpdateCategoryControllerBodyDTO extends PartialType(
+  OmitType(Category, ['id', 'created_at', 'updated_at']),
+) {}
 
 const tags = ['Categorias'];
 
@@ -82,5 +88,20 @@ export class CategoryController {
     });
 
     return { category };
+  }
+
+  @Put('/v1/categories/:id')
+  @ApiOperation({ summary: 'Atualizar uma Categoria', tags })
+  @ApiResponse({ type: GetCategoryControllerResponseDTO })
+  async update(
+    @Body() body: UpdateCategoryControllerBodyDTO,
+    @ReqCategory() category: Category,
+  ): Promise<GetCategoryControllerResponseDTO> {
+    const { category: updatedCategory } = await this.categoryService.update({
+      data: body,
+      category,
+    });
+
+    return { category: updatedCategory };
   }
 }
