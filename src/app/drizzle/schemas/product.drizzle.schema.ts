@@ -11,7 +11,7 @@ export const drizzleCategory = mysqlTable('categories', {
   id: varchar('id', { length: 191 }).primaryKey(),
   name: text().notNull(),
   image_url: text().notNull(),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -30,10 +30,10 @@ export const drizzleCategoryColumns = {
 export const drizzleProduct = mysqlTable('products', {
   id: varchar('id', { length: 191 }).primaryKey(),
   title: text().notNull(),
-  category_id: varchar('id', { length: 191 })
+  category_id: varchar('category_id', { length: 191 })
     .notNull()
     .references(() => drizzleCategory.id),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id),
   price: mediumint().notNull(),

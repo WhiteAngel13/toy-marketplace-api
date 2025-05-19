@@ -11,7 +11,7 @@ import { drizzleProduct } from './product.drizzle.schema';
 export const drizzleStore = mysqlTable('stores', {
   id: varchar('id', { length: 191 }).primaryKey(),
   name: text().notNull(),
-  owner_user_id: varchar('id', { length: 191 })
+  owner_user_id: varchar('owner_user_id', { length: 191 })
     .notNull()
     .references(() => drizzleUser.id),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -29,10 +29,10 @@ export const drizzleStoreColumns = {
 export const drizzleAd = mysqlTable('ads', {
   id: varchar('id', { length: 191 }).primaryKey(),
   image_url: text().notNull(),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
-  product_id: varchar('id', { length: 191 })
+  product_id: varchar('product_id', { length: 191 })
     .notNull()
     .references(() => drizzleProduct.id, { onDelete: 'cascade' }),
   created_at: timestamp({ mode: 'date' }).notNull(),
@@ -50,7 +50,7 @@ export const drizzleAdColumns = {
 
 export const drizzleShipping = mysqlTable('shippings', {
   id: varchar('id', { length: 191 }).primaryKey(),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   name: text().notNull(),
@@ -72,7 +72,7 @@ export const drizzleShippingColumns = {
 
 export const drizzlePaymentMethod = mysqlTable('payment_methods', {
   id: varchar('id', { length: 191 }).primaryKey(),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   name: text().notNull(),
@@ -90,7 +90,7 @@ export const drizzlePaymentMethodColumns = {
 
 export const drizzleCoupon = mysqlTable('coupons', {
   id: varchar('id', { length: 191 }).primaryKey(),
-  store_id: varchar('id', { length: 191 })
+  store_id: varchar('store_id', { length: 191 })
     .notNull()
     .references(() => drizzleStore.id, { onDelete: 'cascade' }),
   code: text().notNull(),
