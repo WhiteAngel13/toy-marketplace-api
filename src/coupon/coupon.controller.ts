@@ -6,10 +6,11 @@ import {
   Get,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { Coupon } from './coupon.entity';
-import { ReqCoupon } from './coupon.config';
+import { CouponGuard, ReqCoupon } from './coupon.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
@@ -44,6 +45,7 @@ export class UpdateCouponControllerBodyDTO extends PartialType(
 const tags = ['Cupons'];
 
 @Controller()
+@UseGuards(CouponGuard)
 export class CouponController {
   constructor(
     private readonly couponService: CouponService,

@@ -1,9 +1,17 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { StoreService } from './store.service';
 import { User } from 'src/user/user.entity';
 import { Store } from './store.entity';
 import { LoggedUser } from 'src/auth/auth.config';
-import { ReqStore } from './store.config';
+import { ReqStore, StoreGuard } from './store.config';
 import {
   ApiOperation,
   ApiProperty,
@@ -35,6 +43,7 @@ export class UpdateStoreControllerBodyDTO extends PartialType(
 
 const tags = ['Lojas'];
 @Controller()
+@UseGuards(StoreGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 

@@ -6,10 +6,11 @@ import {
   Get,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ShippingService } from './shipping.service';
 import { Shipping } from './shipping.entity';
-import { ReqShipping } from './shipping.config';
+import { ReqShipping, ShippingGuard } from './shipping.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
@@ -44,6 +45,7 @@ export class UpdateShippingControllerBodyDTO extends PartialType(
 const tags = ['Fretes'];
 
 @Controller()
+@UseGuards(ShippingGuard)
 export class ShippingController {
   constructor(
     private readonly shippingService: ShippingService,

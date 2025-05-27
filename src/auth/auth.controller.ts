@@ -1,9 +1,15 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { hash, verify } from 'argon2';
 import { User } from 'src/user/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { IsPublic } from './auth.config';
+import { AuthGuard, IsPublic } from './auth.config';
 import { ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
 
@@ -60,6 +66,7 @@ export class SignUpAuthControllerResponseDTO {
 const tags = ['Autenticação'];
 
 @Controller()
+@UseGuards(AuthGuard)
 export class AuthController {
   constructor(
     private readonly userService: UserService,

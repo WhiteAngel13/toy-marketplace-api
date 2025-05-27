@@ -1,15 +1,14 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CartController } from './cart.controller';
-import { APP_GUARD } from '@nestjs/core';
-import { CartGuard, CartMiddleware } from './cart.config';
+import { CartMiddleware } from './cart.config';
 import { StoreModule } from 'src/store/store.module';
 import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [StoreModule, ProductModule],
   controllers: [CartController],
-  providers: [CartService, { provide: APP_GUARD, useClass: CartGuard }],
+  providers: [CartService],
   exports: [CartService],
 })
 export class CartModule implements NestModule {

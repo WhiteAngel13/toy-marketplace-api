@@ -1,21 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
-import { APP_GUARD } from '@nestjs/core';
-import {
-  NotificationGuard,
-  NotificationMiddleware,
-} from './notification.config';
+import { NotificationMiddleware } from './notification.config';
 
 @Module({
   controllers: [NotificationController],
-  providers: [
-    NotificationService,
-    {
-      provide: APP_GUARD,
-      useClass: NotificationGuard,
-    },
-  ],
+  providers: [NotificationService],
   exports: [NotificationService],
 })
 export class NotificationModule implements NestModule {

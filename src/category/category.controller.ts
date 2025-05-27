@@ -5,12 +5,13 @@ import {
   Get,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { User } from 'src/user/user.entity';
 import { Category } from './category.entity';
 import { LoggedUser } from 'src/auth/auth.config';
-import { ReqCategory } from './category.config';
+import { CategoryGuard, ReqCategory } from './category.config';
 import { StoreService } from 'src/store/store.service';
 import {
   ApiOperation,
@@ -43,6 +44,7 @@ export class UpdateCategoryControllerBodyDTO extends PartialType(
 const tags = ['Categorias'];
 
 @Controller()
+@UseGuards(CategoryGuard)
 export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,

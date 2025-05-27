@@ -1,7 +1,7 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order } from './order.entity';
-import { ReqOrder, ReqOrderCart } from './order.config';
+import { OrderGuard, ReqOrder, ReqOrderCart } from './order.config';
 import { Cart } from 'src/cart/cart.entity';
 import { ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
 
@@ -18,6 +18,7 @@ export class GetOrderControllerResponseDTO {
 const tags = ['Pedidos'];
 
 @Controller()
+@UseGuards(OrderGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 

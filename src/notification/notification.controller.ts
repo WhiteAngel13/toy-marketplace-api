@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { User } from 'src/user/user.entity';
 import { Notification } from './notification.entity';
 import { LoggedUser } from 'src/auth/auth.config';
-import { ReqNotification } from './notification.config';
+import { NotificationGuard, ReqNotification } from './notification.config';
 import { ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
 
 export class ListNotificationControllerResponseDTO {
@@ -19,6 +19,7 @@ export class GetNotificationControllerResponseDTO {
 const tags = ['Notificações'];
 
 @Controller()
+@UseGuards(NotificationGuard)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 

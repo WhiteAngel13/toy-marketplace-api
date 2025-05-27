@@ -1,18 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { StoreController } from './store.controller';
-import { APP_GUARD } from '@nestjs/core';
-import { StoreGuard, StoreMiddleware } from './store.config';
+import { StoreMiddleware } from './store.config';
 
 @Module({
   controllers: [StoreController],
-  providers: [
-    StoreService,
-    {
-      provide: APP_GUARD,
-      useClass: StoreGuard,
-    },
-  ],
+  providers: [StoreService],
   exports: [StoreService],
 })
 export class StoreModule implements NestModule {

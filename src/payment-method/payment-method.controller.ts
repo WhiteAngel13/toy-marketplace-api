@@ -6,11 +6,12 @@ import {
   Get,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
-import { ReqPaymentMethod } from './payment-method.config';
+import { PaymentMethodGuard, ReqPaymentMethod } from './payment-method.config';
 import { PaymentMethod } from './payment-method.entity';
 import { PaymentMethodService } from './payment-method.service';
 import {
@@ -42,6 +43,7 @@ export class UpdatePaymentMethodControllerBodyDTO extends PartialType(
 
 const tags = ['Métodos de Pagamento'];
 @Controller()
+@UseGuards(PaymentMethodGuard)
 export class PaymentMethodController {
   constructor(
     private readonly paymentMethodService: PaymentMethodService,

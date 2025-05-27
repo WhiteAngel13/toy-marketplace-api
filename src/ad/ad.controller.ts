@@ -4,10 +4,11 @@ import {
   ForbiddenException,
   Get,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { AdService } from './ad.service';
 import { Ad } from './ad.entity';
-import { ReqAd } from './ad.config';
+import { AdGuard, ReqAd } from './ad.config';
 import { StoreService } from 'src/store/store.service';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
@@ -43,6 +44,7 @@ export class UpdateAdControllerBodyDTO extends PartialType(
 const tags = ['Anúncios'];
 
 @Controller()
+@UseGuards(AdGuard)
 export class AdController {
   constructor(
     private readonly adService: AdService,

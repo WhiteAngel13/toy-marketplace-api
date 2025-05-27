@@ -6,9 +6,10 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Cart, CartProduct } from './cart.entity';
-import { ReqCart, ReqCartProduct } from './cart.config';
+import { CartGuard, ReqCart, ReqCartProduct } from './cart.config';
 import { LoggedUser } from 'src/auth/auth.config';
 import { User } from 'src/user/user.entity';
 import { CartService } from './cart.service';
@@ -60,6 +61,7 @@ export class UpdateProductCartControllerBodyDTO {
 const tags = ['Carrinho'];
 
 @Controller()
+@UseGuards(CartGuard)
 export class CartController {
   constructor(
     private readonly cartService: CartService,
